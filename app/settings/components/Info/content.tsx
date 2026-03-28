@@ -1,27 +1,15 @@
 import { retrieveLaunchParams } from '@tma.js/sdk';
 
 const UserInfo = () => {
-    const debug = {
-        href: window.location.href,
-        telegram: !!window.Telegram?.WebApp,
-        initData: window.Telegram?.WebApp?.initData,
-        initDataUnsafe: window.Telegram?.WebApp?.initDataUnsafe,
-    }
-
-    let params = null
-    let error = null
-
-    try {
-        params = retrieveLaunchParams()
-    } catch (e) {
-        error = String(e)
-    }
+    const { tgWebAppData } = retrieveLaunchParams()
+    const user = tgWebAppData?.user;
 
     return (
-        <pre style={{ fontSize: 10, wordBreak: 'break-all' }}>
-            {JSON.stringify({ params, error, debug }, null, 2)}
-        </pre>
-    )
+        <div>
+            <h2>Из Telegram WebApp v6:</h2>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
+        </div>
+    );
 }
 
 export default UserInfo;
