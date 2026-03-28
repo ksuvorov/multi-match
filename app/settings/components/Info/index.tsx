@@ -1,21 +1,18 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState } from 'react'
 
 const UserInfo = () => {
-    const tg = typeof window !== 'undefined'
-        ? window.Telegram?.WebApp
-        : null
-
-    const telegramUser = tg?.initDataUnsafe?.user ?? null
-
-    useEffect(() => {
+    const [telegramUser] = useState(() => {
+        if (typeof window === 'undefined') return null
+        const tg = window.Telegram?.WebApp
         tg?.ready()
-    }, [tg]);
+        return tg?.initDataUnsafe?.user ?? null
+    })
 
     return (
         <div>
-            <h2>Из Telegram WebApp:</h2>
+            <h2>Из Telegram WebApp v2:</h2>
             <pre>{JSON.stringify(telegramUser, null, 2)}</pre>
         </div>
     )
