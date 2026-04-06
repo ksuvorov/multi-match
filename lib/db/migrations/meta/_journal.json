@@ -8,6 +8,13 @@
       "when": 1775414035719,
       "tag": "0000_dry_kate_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775502722742,
+      "tag": "0001_true_hairball",
+      "breakpoints": true
     }
   ]
 }
