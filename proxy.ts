@@ -6,3 +6,9 @@ export default chain(
     withSession,
     withPlatform,
 )
+
+export const config = {
+    matcher: [
+        '/((?!api|_next|.*\\..*).*)',
+    ],
+}

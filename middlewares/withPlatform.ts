@@ -5,11 +5,11 @@ export async function withPlatform(
     next: () => Promise<NextResponse>
 ) {
     const segments = request.nextUrl.pathname.split('/');
-    if (segments[0] !== 'platform') {
+    if (segments[1] !== 'platform') {
         return next();
     }
 
-    const platformSlug = segments[1];
+    const platformSlug = segments[2];
 
     const ignoredPrefixes = ['_next', 'favicon.ico', 'api', 'public']
 
