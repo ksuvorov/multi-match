@@ -20,7 +20,7 @@ export const listings = pgTable('listings', {
     status:         listingStatusEnum('status').notNull().default('draft'),
 
     // --- Content ---
-    title:          text('title').notNull(),
+    title:          text('title'),
     description:    text('description'),
 
     // --- Tenant custom fields ---
