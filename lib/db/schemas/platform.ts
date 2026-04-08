@@ -1,21 +1,28 @@
-import { pgTable, uuid, text, jsonb, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, jsonb, timestamp, integer } from 'drizzle-orm/pg-core'
 
 export type FieldSchema = {
-    key: string
-    label: string
-    type: 'text' | 'number' | 'select' | 'multiselect' | 'date' | 'location'
-    required?: boolean
-    options?: string[]
+    key:        string
+    label:      string
+    type:       'text' | 'number' | 'select' | 'multiselect' | 'date' | 'location'
+    required?:  boolean
+    options?:   string[]
+    column?:    'locationPoint' | 'locationLabel' | 'countryCode' | 'searchRadiusKm'
+        | 'priceAmount' | 'priceCurrency' | 'priceType'
+        | 'availableFrom' | 'availableUntil'
+}
+
+export type ListingSchemas = {
+    offer:   FieldSchema[]
+    request: FieldSchema[]
 }
 
 export const platform = pgTable('platform', {
-    id:            uuid('id').primaryKey().defaultRandom(),
-    slug:          text('slug').notNull().unique(),
-    domain:        text('domain').notNull().unique(),
-    name:          text('name').notNull(),
-    providerLabel: text('providerLabel').notNull().default('Provider'),
-    seekerLabel:   text('seekerLabel').notNull().default('Seeker'),
-    listingSchema: jsonb('listingSchema').$type<FieldSchema[]>().notNull().default([]),
-    requestSchema: jsonb('requestSchema').$type<FieldSchema[]>().notNull().default([]),
-    createdAt:     timestamp('createdAt').notNull().defaultNow(),
+    id:             uuid('id').primaryKey().defaultRandom(),
+    slug:           text('slug').notNull().unique(),
+    domain:         text('domain').notNull().unique(),
+    name:           text('name').notNull(),
+    listingSchemas: jsonb('listingSchemas').$type<ListingSchemas>().notNull().default({ offer: [], request: [] }),
+    schemaVersion:  integer('schemaVersion').notNull().default(1),
+    createdAt:      timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt:      timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow(),
 })
