@@ -2,6 +2,8 @@
 
 import {useEffect, useRef} from 'react';
 
+import {authClient} from '@/lib/auth/client';
+
 export default function AnonymousSessionProvider() {
     const started = useRef(false)
 
@@ -10,14 +12,10 @@ export default function AnonymousSessionProvider() {
         started.current = true
 
         const run = async () => {
-            await fetch('/api/auth/sign-in/anonymous', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: '{}',
-            })
+            const session = await authClient.getSession()
+            if (!session.data) {
+                await authClient.signIn.anonymous()
+            }
         }
 
         run()
