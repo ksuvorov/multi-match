@@ -19,8 +19,6 @@ export type ListingSchemas = {
 export const platform = pgTable('platform', {
     id:             uuid('id').primaryKey().defaultRandom(),
     slug:           text('slug').notNull().unique(),
-    domain:         text('domain').notNull().unique(),
-    name:           text('name').notNull(),
     listingSchemas: jsonb('listingSchemas').$type<ListingSchemas>().notNull().default({ offer: [], request: [] }),
     schemaVersion:  integer('schemaVersion').notNull().default(1),
     createdAt:      timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
