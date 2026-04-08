@@ -6,7 +6,8 @@ export type FieldSchema = {
     type:       'text' | 'number' | 'select' | 'multiselect' | 'date' | 'location'
     required?:  boolean
     options?:   string[]
-    column?:    'locationPoint' | 'locationLabel' | 'countryCode' | 'searchRadiusKm'
+    column?:    'title' | 'description'
+        | 'locationPoint' | 'locationLabel' | 'countryCode' | 'searchRadiusKm'
         | 'priceAmount' | 'priceCurrency' | 'priceType'
         | 'availableFrom' | 'availableUntil'
 }
