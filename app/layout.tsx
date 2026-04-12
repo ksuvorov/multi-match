@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 
+import {QueryProvider} from '@/app/providers/query';
+
 import AnonymousSessionProvider from './components/anonymousSessionProvider';
 
 import "./globals.css";
@@ -39,10 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <AnonymousSessionProvider />
-        {children}
-        <SpeedInsights />
-        <Analytics />
+        <QueryProvider>
+          <AnonymousSessionProvider />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </QueryProvider>
       </body>
     </html>
   );
