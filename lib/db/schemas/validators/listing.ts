@@ -2,8 +2,24 @@ import { z } from 'zod'
 
 import type { FieldSchema } from '../platform'
 
-export const listingTypeSchema = z.enum(['offer', 'request'])
-export type ListingType = z.infer<typeof listingTypeSchema>
+export const listingTypeSchema = z.enum(['offer', 'request']);
+export type ListingType = z.infer<typeof listingTypeSchema>;
+
+export function splitListingFields(fields: Record<string, unknown>, fieldSchema: FieldSchema[]) {
+    const columns: Record<string, unknown> = {}
+    const meta:    Record<string, unknown> = {}
+
+    for (const f of fieldSchema) {
+        const value = fields[f.key]
+        if (f.column) {
+            columns[f.column] = value
+        } else {
+            meta[f.key] = value
+        }
+    }
+
+    return { columns, meta }
+}
 
 function fieldToZod(field: FieldSchema): z.ZodTypeAny {
     let schema: z.ZodTypeAny
