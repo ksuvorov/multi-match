@@ -1,3 +1,9 @@
+import Form from './components/Form';
+
 export default function ProvidePage() {
-    return <div>Welcome to Provide section!</div>
+    return (
+        <div>
+            <Form />
+        </div>
+    )
 }

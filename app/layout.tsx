@@ -1,11 +1,16 @@
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
+
+import {QueryProvider} from '@/app/providers/query';
+import { cn } from "@/lib/utils";
 
 import AnonymousSessionProvider from './components/anonymousSessionProvider';
 
 import "./globals.css";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,12 +42,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
       <body>
-        <AnonymousSessionProvider />
-        {children}
-        <SpeedInsights />
-        <Analytics />
+        <QueryProvider>
+          <AnonymousSessionProvider />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </QueryProvider>
       </body>
     </html>
   );
