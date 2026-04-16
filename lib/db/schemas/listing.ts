@@ -44,6 +44,10 @@ export const listings = pgTable('listings', {
     availableUntil: timestamp('availableUntil', { withTimezone: true }),
     expiresAt:      timestamp('expiresAt',      { withTimezone: true }),
 
+    // --- Matching ---
+    matchedAt:      timestamp('matchedAt', { withTimezone: true }),
+    matchingError:  text('matchingError'),
+
     createdAt:      timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
     updatedAt:      timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [

@@ -36,6 +36,20 @@
       "when": 1775679600302,
       "tag": "0004_worried_dragon_man",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776361387122,
+      "tag": "0005_chubby_albert_cleary",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776363753580,
+      "tag": "0006_burly_doctor_strange",
+      "breakpoints": true
     }
   ]
 }
