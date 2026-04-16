@@ -1,10 +1,17 @@
 'use client'
 
 import {DynamicField} from '@/app/components/DynamicField';
+import useListingForm from '@/lib/hooks/useListingForm';
 
-import useEnhance from './hooks';
+type ListingType = 'offer' | 'request';
 
-export default function Form() {
+interface Props {
+    listingType: ListingType;
+    submitLabel?: string;
+    onSuccess?: () => void;
+}
+
+export default function ListingForm({listingType, submitLabel = 'Submit', onSuccess}: Props) {
     const {
         schema,
         getFieldValue,
@@ -12,7 +19,7 @@ export default function Form() {
         getFieldError,
         handleSubmit,
         onSubmit,
-    } = useEnhance();
+    } = useListingForm(listingType, onSuccess);
 
     return (
         <div>
@@ -27,7 +34,7 @@ export default function Form() {
             ))}
 
             <button type="button" onClick={handleSubmit(onSubmit)}>
-                Create listing
+                {submitLabel}
             </button>
         </div>
     )

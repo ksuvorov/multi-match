@@ -1,6 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
-import {useRouter} from 'next/navigation';
 import {useForm} from 'react-hook-form';
 import {useCallback} from 'react';
 
@@ -8,59 +7,60 @@ import {buildListingSchema} from '@/lib/db/schemas/validators/listing';
 import {FieldSchema} from '@/lib/db/schemas/platform';
 import {usePlatform} from '@/app/providers/platform';
 
-export default function useEnhance() {
+type ListingType = 'offer' | 'request';
+
+export default function useListingForm(listingType: ListingType, onSuccess?: () => void) {
     const platform = usePlatform();
-    const schema = platform.listingSchemas.offer;
-    const router   = useRouter()
+    const schema = platform.listingSchemas[listingType];
 
-    const zodSchema = buildListingSchema(schema)
+    const zodSchema = buildListingSchema(schema);
 
-    const { handleSubmit, setValue, watch, formState: { errors } } = useForm({
+    const {handleSubmit, setValue, watch, formState: {errors}} = useForm({
         resolver: zodResolver(zodSchema),
         defaultValues: Object.fromEntries(
             schema.map(f => [f.key, f.type === 'multiselect' ? [] : ''])
         )
-    })
+    });
 
-    const { mutate: createListing } = useMutation({
+    const {mutate: createListing} = useMutation({
         mutationFn: async (fields: Record<string, unknown>) => {
             const res = await fetch('/api/listings', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({
-                    platformId:  platform.id,
-                    listingType: 'offer',
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    platformId: platform.id,
+                    listingType,
                     fields,
                 })
-            })
+            });
             if (!res.ok) {
-                const err = await res.json()
-                throw new Error(err.errors ? Object.values(err.errors).flat().join(', ') : 'Failed to create listing')
+                const err = await res.json();
+                throw new Error(err.errors ? Object.values(err.errors).flat().join(', ') : 'Failed to create listing');
             }
-            return res.json()
+            return res.json();
         },
         onSuccess: () => {
-            router.push(`/platform/dive`)
+            onSuccess?.();
         },
         onError: (err) => {
-            console.error(err.message)
+            console.error(err.message);
         }
     });
 
-    const getFieldValue = useCallback((field: FieldSchema) => watch(field.key), [watch])
+    const getFieldValue = useCallback((field: FieldSchema) => watch(field.key), [watch]);
 
     const getFieldError = useCallback(
         (field: FieldSchema): string | undefined => errors[field.key]?.message as string | undefined,
         [errors],
-    )
+    );
 
     const setFieldValue = useCallback((field: FieldSchema, value: unknown) => {
-        setValue(field.key, value, { shouldValidate: true })
-    }, [setValue])
+        setValue(field.key, value, {shouldValidate: true});
+    }, [setValue]);
 
     const onSubmit = useCallback((data: Record<string, unknown>) => {
-        createListing(data)
-    }, [createListing])
+        createListing(data);
+    }, [createListing]);
 
     return {
         schema,
@@ -69,5 +69,5 @@ export default function useEnhance() {
         getFieldError,
         handleSubmit,
         onSubmit,
-    }
+    };
 }
