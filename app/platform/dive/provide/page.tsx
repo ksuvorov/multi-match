@@ -1,9 +1,16 @@
-import Form from './components/Form';
+'use client'
+
+import {useRouter} from 'next/navigation';
+
+import ListingForm from '@/app/components/ListingForm';
 
 export default function ProvidePage() {
+    const router   = useRouter();
     return (
-        <div>
-            <Form />
-        </div>
+        <ListingForm
+            listingType="offer"
+            submitLabel="Create listing"
+            onSuccess={() => router.push('/platform/dive')}
+        />
     )
 }
