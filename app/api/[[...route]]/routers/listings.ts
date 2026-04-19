@@ -59,5 +59,16 @@ listingsRouter.post('/', requireAuth, async (c) => {
         })
         .returning()
 
+    await Promise.race([
+        fetch(`${process.env.APP_URL}/api/internal/matching/listing`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({ listingId: listing.id }),
+        }),
+        new Promise(res => setTimeout(res, 200))
+    ]);
+
     return c.json(listing, 201)
 })
