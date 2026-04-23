@@ -22,8 +22,12 @@ export async function withPlatform(
         return NextResponse.redirect(new URL('/', request.url))
     }
 
-    const res = await next()
-    res.headers.set('x-platform-slug', platformSlug)
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-platform-slug', platformSlug)
 
-    return res
+    return NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        },
+    });
 }
