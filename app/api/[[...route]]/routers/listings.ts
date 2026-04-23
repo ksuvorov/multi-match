@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 
-import {buildListingSchema, listingTypeSchema, splitListingFields} from '@/lib/db/schemas/validators/listing';
+import {buildListingSchema, splitListingFields} from '@/lib/db/schemas/validators/listing';
 import {ensureMembership} from '@/lib/db/queries/membership';
 import * as schema from '@/lib/db/schema';
 import db from '@/lib/db';
@@ -14,11 +14,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
     const userId = c.get('userId');
     const body = await c.req.json()
 
-    const parsedType = listingTypeSchema.safeParse(body.listingType)
-    if (!parsedType.success) return c.json({ error: 'Invalid listing type' }, 400)
-    const listingType = parsedType.data
-
-    const { platformId, fields } = body
+    const { platformId, fields, role } = body
     if (!platformId || !fields) return c.json({ error: 'Missing required fields' }, 400)
 
     const p = await db.query.platform.findFirst({
@@ -26,7 +22,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
     })
     if (!p) return c.json({ error: 'Platform not found' }, 404)
 
-    const fieldSchema = p.listingSchemas[listingType]
+    const fieldSchema = p.listingSchemas[role]
 
     const zodSchema = buildListingSchema(fieldSchema)
     const result    = zodSchema.safeParse(fields)
@@ -37,7 +33,6 @@ listingsRouter.post('/', requireAuth, async (c) => {
 
     const { columns, meta } = splitListingFields(fields, fieldSchema);
 
-    const role = listingType === 'offer' ? 'provider' : 'seeker'
     const membership = await ensureMembership(platformId, userId, role);
 
     const [listing] = await db
@@ -45,7 +40,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
         .values({
             platformId,
             membershipId:   membership.id,
-            listingType,
+            role,
             status:         'active',
             schemaVersion:  p.schemaVersion,
             meta,

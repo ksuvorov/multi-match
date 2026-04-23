@@ -18,23 +18,23 @@ export const matches = pgTable('matches', {
     id:           uuid('id').primaryKey().defaultRandom(),
     platformId:   uuid('platformId').notNull().references(() => platform.id, { onDelete: 'cascade' }),
 
-    offerId:      uuid('offerId').notNull().references(() => listings.id, { onDelete: 'cascade' }),
-    requestId:    uuid('requestId').notNull().references(() => listings.id, { onDelete: 'cascade' }),
+    listingAId: uuid('listingAId').notNull().references(() => listings.id, { onDelete: 'cascade' }),
+    listingBId: uuid('listingBId').notNull().references(() => listings.id, { onDelete: 'cascade' }),
 
-    status:       matchStatusEnum('status').notNull().default('pending'),
-    origin:       matchOriginEnum('origin').notNull().default('auto'),
+    status:     matchStatusEnum('status').notNull().default('pending'),
+    origin:     matchOriginEnum('origin').notNull().default('auto'),
 
-    offerApprovedAt:    timestamp('offerApprovedAt',   { withTimezone: true }),
-    requestApprovedAt:  timestamp('requestApprovedAt', { withTimezone: true }),
+    listingAApprovedAt: timestamp('listingAApprovedAt', { withTimezone: true }),
+    listingBApprovedAt: timestamp('listingBApprovedAt', { withTimezone: true }),
     confirmedAt:        timestamp('confirmedAt',        { withTimezone: true }),
 
     createdAt:    timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
     updatedAt:    timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    uniqueIndex('matches_offer_request_unique').on(t.offerId, t.requestId),
+    uniqueIndex('matches_ab_unique').on(t.listingAId, t.listingBId),
 
     index('matches_platform_idx').on(t.platformId),
-    index('matches_offer_idx').on(t.offerId),
-    index('matches_request_idx').on(t.requestId),
+    index('matches_listingA_idx').on(t.listingAId),
+    index('matches_listingB_idx').on(t.listingBId),
     index('matches_status_idx').on(t.status),
 ])

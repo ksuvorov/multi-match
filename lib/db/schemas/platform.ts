@@ -12,9 +12,11 @@ export type FieldSchema = {
         | 'availableFrom' | 'availableUntil'
 }
 
-export type ListingSchemas = {
-    offer:   FieldSchema[]
-    request: FieldSchema[]
+export type ListingSchemas = Record<string, FieldSchema[]>
+export type Platform = typeof platform.$inferSelect
+
+export type PlatformConfig = {
+    roles: string[]
 }
 
 export const platform = pgTable('platform', {
@@ -22,6 +24,7 @@ export const platform = pgTable('platform', {
     slug:           text('slug').notNull().unique(),
     listingSchemas: jsonb('listingSchemas').$type<ListingSchemas>().notNull().default({ offer: [], request: [] }),
     schemaVersion:  integer('schemaVersion').notNull().default(1),
+    config:         jsonb('config').$type<PlatformConfig>().notNull().default({ roles: [] }),
     createdAt:      timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
     updatedAt:      timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow(),
 })

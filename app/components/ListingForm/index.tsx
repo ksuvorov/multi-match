@@ -3,15 +3,13 @@
 import {DynamicField} from '@/app/components/DynamicField';
 import useListingForm from '@/lib/hooks/useListingForm';
 
-type ListingType = 'offer' | 'request';
-
 interface Props {
-    listingType: ListingType;
+    role: string;
     submitLabel?: string;
     onSuccess?: () => void;
 }
 
-export default function ListingForm({listingType, submitLabel = 'Submit', onSuccess}: Props) {
+export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: Props) {
     const {
         schema,
         getFieldValue,
@@ -19,7 +17,7 @@ export default function ListingForm({listingType, submitLabel = 'Submit', onSucc
         getFieldError,
         handleSubmit,
         onSubmit,
-    } = useListingForm(listingType, onSuccess);
+    } = useListingForm(role, onSuccess);
 
     return (
         <div>
