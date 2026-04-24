@@ -3,11 +3,13 @@ import { pgTable, uuid, text, timestamp, index, unique } from 'drizzle-orm/pg-co
 import { user } from '../../auth/schema'
 import { platform } from './platform'
 
+export type PlatformMembership = typeof platformMembership.$inferSelect
+
 export const platformMembership = pgTable('platformMembership', {
     id:         uuid('id').primaryKey().defaultRandom(),
     platformId: uuid('platformId').notNull().references(() => platform.id, { onDelete: 'cascade' }),
     userId:     text('userId').notNull().references(() => user.id, { onDelete: 'cascade' }),
-    roles:      text('roles').array().notNull().default([]),
+    activeRole: text('activeRole'),
     joinedAt:   timestamp('joinedAt').notNull().defaultNow(),
 }, t => [
     unique().on(t.platformId, t.userId),

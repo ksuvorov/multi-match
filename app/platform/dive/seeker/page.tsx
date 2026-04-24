@@ -8,8 +8,8 @@ export default function ProvidePage() {
     const router   = useRouter();
     return (
         <ListingForm
-            listingType="offer"
-            submitLabel="Create listing"
+            role="seeker"
+            submitLabel="Send request"
             onSuccess={() => router.push('/platform/dive')}
         />
     )

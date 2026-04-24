@@ -7,11 +7,9 @@ import {buildListingSchema} from '@/lib/db/schemas/validators/listing';
 import {FieldSchema} from '@/lib/db/schemas/platform';
 import {usePlatform} from '@/app/providers/platform';
 
-type ListingType = 'offer' | 'request';
-
-export default function useListingForm(listingType: ListingType, onSuccess?: () => void) {
+export default function useListingForm(role: string, onSuccess?: () => void) {
     const platform = usePlatform();
-    const schema = platform.listingSchemas[listingType];
+    const schema = platform.listingSchemas[role];
 
     const zodSchema = buildListingSchema(schema);
 
@@ -29,7 +27,7 @@ export default function useListingForm(listingType: ListingType, onSuccess?: () 
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     platformId: platform.id,
-                    listingType,
+                    role,
                     fields,
                 })
             });

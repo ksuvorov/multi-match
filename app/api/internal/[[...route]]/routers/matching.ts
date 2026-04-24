@@ -34,10 +34,18 @@ matchingRouter.post('/listing', async (c) => {
         return c.json({ status: 'skipped' })
     }
 
-    const listing = updated[0]
+    const listing = updated[0];
+
+    const platformRow = await db.query.platform.findFirst({
+        where: eq(schema.platform.id, listing.platformId),
+    })
+
+    if (!platformRow) {
+        return c.json({ error: 'Platform not found' }, 404)
+    }
 
     try {
-        await detectAndCreateMatches(listing)
+        await detectAndCreateMatches(listing, platformRow.config)
 
         return c.json({ status: 'ok' })
     } catch (e) {

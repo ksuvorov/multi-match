@@ -1,0 +1,1 @@
+ALTER TABLE "platform" ADD COLUMN "config" jsonb DEFAULT '{"roles":[]}'::jsonb NOT NULL;
