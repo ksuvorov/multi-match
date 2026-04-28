@@ -24,6 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.9",
     "next": "^16.2.1",
