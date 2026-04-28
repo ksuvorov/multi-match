@@ -1,10 +1,10 @@
-import {
-    pgTable, uuid, text, jsonb, timestamp,
-    integer, numeric, pgEnum, index
-} from 'drizzle-orm/pg-core'
+import {pgTable, uuid, text, jsonb, timestamp, integer, numeric, pgEnum, index} from 'drizzle-orm/pg-core'
+import {InferSelectModel} from 'drizzle-orm';
 
 import { platformMembership } from './platformMembership';
 import { platform } from './platform'
+
+export type Listing = InferSelectModel<typeof listings>
 
 export const listingStatusEnum = pgEnum('listing_status', ['draft', 'active', 'paused', 'closed', 'expired'])
 export const geoTypeEnum       = pgEnum('geo_type',       ['none', 'point', 'point_radius', 'remote'])
