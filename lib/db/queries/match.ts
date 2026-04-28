@@ -1,6 +1,7 @@
-import { and, eq, lte, gte, isNull, or, ne } from 'drizzle-orm'
+import {and, eq, lte, gte, isNull, or, ne, inArray, aliasedTable, sql} from 'drizzle-orm'
 
 import { PlatformConfig } from '@/lib/db/schemas/platform'
+import {listings, matches} from '@/lib/db/schema';
 import * as schema from '@/lib/db/schema'
 import db from '@/lib/db'
 
@@ -75,4 +76,43 @@ export async function detectAndCreateMatches(
 
         throw e
     }
+}
+
+export type DashboardMatch = Awaited<ReturnType<typeof getMembershipMatches>>[number]
+export async function getMembershipMatches(membershipId: string, role: string) {
+    const memberListingIds = db
+        .select({ id: listings.id })
+        .from(listings)
+        .where(and(
+            eq(listings.membershipId, membershipId),
+            eq(listings.role, role),
+        ))
+
+    const listingA = aliasedTable(listings, 'listingA')
+    const listingB = aliasedTable(listings, 'listingB')
+
+    return db
+        .select({
+            match: matches,
+            counterpart: {
+                id:            sql<string>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.id} ELSE ${listingA.id} END`,
+                title:         sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.title} ELSE ${listingA.title} END`,
+                description:   sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.description} ELSE ${listingA.description} END`,
+                role:          sql<string>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.role} ELSE ${listingA.role} END`,
+                locationLabel: sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.locationLabel} ELSE ${listingA.locationLabel} END`,
+                priceAmount:   sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceAmount} ELSE ${listingA.priceAmount} END`,
+                priceCurrency: sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceCurrency} ELSE ${listingA.priceCurrency} END`,
+                priceType:     sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceType} ELSE ${listingA.priceType} END`,
+            },
+        })
+        .from(matches)
+        .innerJoin(listingA, eq(listingA.id, matches.listingAId))
+        .innerJoin(listingB, eq(listingB.id, matches.listingBId))
+        .where(
+            or(
+                inArray(matches.listingAId, memberListingIds),
+                inArray(matches.listingBId, memberListingIds),
+            )
+        )
+        .orderBy(matches.createdAt)
 }
