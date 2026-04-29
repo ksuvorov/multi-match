@@ -56,20 +56,16 @@ listingsRouter.post('/', requireAuth, async (c) => {
         })
         .returning()
 
-    console.log('triggering matching for listing', listing.id, 'url:', `${baseUrl}/api/internal/matching/listing`)
-
     waitUntil(
         fetch(`${baseUrl}/api/internal/matching/listing`, {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
+            headers: {
+                'content-type': 'application/json',
+                'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET!,
+            },
             body: JSON.stringify({ listingId: listing.id }),
-        }).then(res => {
-            console.log('matching response status:', res.status)
-        }).catch(err => {
-            console.error('matching fetch error:', err)
         })
     )
-
 
     return c.json(listing, 201)
 })
