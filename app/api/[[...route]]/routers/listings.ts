@@ -1,3 +1,4 @@
+import { waitUntil } from '@vercel/functions'
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 
@@ -55,16 +56,13 @@ listingsRouter.post('/', requireAuth, async (c) => {
         })
         .returning()
 
-    await Promise.race([
+    waitUntil(
         fetch(`${baseUrl}/api/internal/matching/listing`, {
             method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-            },
+            headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ listingId: listing.id }),
-        }),
-        new Promise(res => setTimeout(res, 200))
-    ]);
+        })
+    )
 
     return c.json(listing, 201)
 })
