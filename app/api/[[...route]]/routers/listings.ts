@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import {buildListingSchema, splitListingFields} from '@/lib/db/schemas/validators/listing';
 import {ensureMembership} from '@/lib/db/queries/membership';
 import * as schema from '@/lib/db/schema';
+import {baseUrl} from '@/lib/baseUrl';
 import db from '@/lib/db';
 
 import {requireAuth} from '../middlewares/auth';
@@ -55,7 +56,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
         .returning()
 
     await Promise.race([
-        fetch(`${process.env.APP_URL}/api/internal/matching/listing`, {
+        fetch(`${baseUrl}/api/internal/matching/listing`, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
