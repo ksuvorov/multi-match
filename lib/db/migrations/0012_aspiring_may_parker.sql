@@ -1,0 +1,1 @@
+ALTER TABLE "push_subscription" RENAME COLUMN "user_id" TO "membership_id";
