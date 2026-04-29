@@ -10,19 +10,17 @@ import db from '@/lib/db'
 
 export const getPlatformBootstrap = cache(async (platformSlug: string) => {
     const h = await headers();
-    const session = await auth.api.getSession({
-        headers: new Headers(h)
-    })
-
-    if (!session?.user) return null
+    const session = await auth.api.getSession({ headers: h })
 
     const platformRow = await db.query.platform.findFirst({
         where: eq(platform.slug, platformSlug),
     })
 
-    if (!platformRow) return null
+    if (!platformRow) {
+        return null;
+    }
 
-    const membership = await db.query.platformMembership.findFirst({
+    const membership = session && await db.query.platformMembership.findFirst({
         where: and(
             eq(platformMembership.userId, session.user.id),
             eq(platformMembership.platformId, platformRow.id)
@@ -30,7 +28,7 @@ export const getPlatformBootstrap = cache(async (platformSlug: string) => {
     })
 
     return {
-        user: session.user as User,
+        user: session?.user as User,
         platform: platformRow,
         platformMembership: membership ?? null,
     }

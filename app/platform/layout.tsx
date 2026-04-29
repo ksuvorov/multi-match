@@ -1,9 +1,20 @@
 import {redirect} from 'next/navigation';
 import {PropsWithChildren} from 'react';
 import { headers } from 'next/headers'
+import {Metadata} from 'next';
 
 import {PlatformSessionProvider} from '@/app/providers/platformSession';
 import {getPlatformBootstrap} from '@/lib/db/queries/bootstrap';
+
+import {PushInit} from './PushInit';
+
+export async function generateMetadata(): Promise<Metadata> {
+    const h = await headers();
+    const slug = h.get('x-platform-slug');
+    return {
+        manifest: `/api/manifest?platform=${slug}`,
+    }
+}
 
 export default async function PlatformLayout({ children }: PropsWithChildren) {
     const h = await headers()
@@ -21,6 +32,7 @@ export default async function PlatformLayout({ children }: PropsWithChildren) {
 
     return (
         <PlatformSessionProvider value={data}>
+            <PushInit />
             {children}
         </PlatformSessionProvider>
     )

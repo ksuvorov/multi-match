@@ -10,7 +10,7 @@ export default function ProvidePage() {
         <ListingForm
             role="provider"
             submitLabel="Create listing"
-            onSuccess={() => router.push('/platform/dive')}
+            onSuccess={() => router.push('/platform/dive/dashboard')}
         />
     )
 }

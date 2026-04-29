@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
+import { EnableNotificationButton } from '@/app/components/EnableNotificationsButton';
 import { usePlatformSession } from '@/app/providers/platformSession'
 import { switchRole } from '@/app/actions/switchRole'
 import {Platform} from '@/lib/db/schemas/platform';
@@ -50,6 +51,9 @@ export default function DashboardHeader({roles, activeRole}: Props) {
                         {ROLE_LABELS[role] ?? role}
                     </button>
                 ))}
+            </div>
+            <div>
+                <EnableNotificationButton />
             </div>
         </header>
     )

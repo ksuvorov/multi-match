@@ -2,6 +2,7 @@ import { eq, isNull, and } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import { detectAndCreateMatches } from '@/lib/db/queries/match'
+import { sendPushToMemberships } from '@/lib/push/send';
 import * as schema from '@/lib/db/schema'
 import db from '@/lib/db'
 
@@ -45,7 +46,19 @@ matchingRouter.post('/listing', async (c) => {
     }
 
     try {
-        await detectAndCreateMatches(listing, platformRow.config)
+        const newMatches = await detectAndCreateMatches(listing, platformRow.config)
+        if (newMatches.length) {
+            const membershipIds = [
+                listing.membershipId,
+                ...newMatches.map((m) => m.membershipId),
+            ].filter(Boolean) as string[];
+
+            void sendPushToMemberships(membershipIds, {
+                title: "New match! 🎉",
+                body: "You have a new match.",
+                url: "/platform/dive/dashboard",
+            });
+        }
 
         return c.json({ status: 'ok' })
     } catch (e) {

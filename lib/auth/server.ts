@@ -3,12 +3,21 @@ import { anonymous } from 'better-auth/plugins'
 import { betterAuth } from 'better-auth'
 
 import db from '@/lib/db'
-
 import * as schema from './schema'
 
 export const auth = betterAuth({
     secret: process.env.BETTER_AUTH_SECRET!,
-    baseURL: process.env.BETTER_AUTH_URL!,
+
+    baseURL: {
+        allowedHosts: [
+            '*.vercel.app',
+            'localhost:3000',
+        ],
+        protocol: 'auto',
+        fallback: process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : 'http://localhost:3000',
+    },
 
     database: drizzleAdapter(db, {
         provider: 'pg',

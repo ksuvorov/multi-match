@@ -1,0 +1,9 @@
+CREATE TABLE "push_subscription" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" text NOT NULL,
+	"endpoint" text NOT NULL,
+	"p256dh" text NOT NULL,
+	"auth" text NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	CONSTRAINT "push_subscription_endpoint_unique" UNIQUE("endpoint")
+);
