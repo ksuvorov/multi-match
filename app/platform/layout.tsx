@@ -6,6 +6,8 @@ import {Metadata} from 'next';
 import {PlatformSessionProvider} from '@/app/providers/platformSession';
 import {getPlatformBootstrap} from '@/lib/db/queries/bootstrap';
 
+import {PushInit} from './PushInit';
+
 export async function generateMetadata(): Promise<Metadata> {
     const h = await headers();
     const slug = h.get('x-platform-slug');
@@ -30,6 +32,7 @@ export default async function PlatformLayout({ children }: PropsWithChildren) {
 
     return (
         <PlatformSessionProvider value={data}>
+            <PushInit />
             {children}
         </PlatformSessionProvider>
     )
