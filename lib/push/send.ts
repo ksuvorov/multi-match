@@ -14,16 +14,12 @@ export async function sendPushToMemberships(
     membershipIds: string[],
     payload: { title: string; body: string; url?: string },
 ) {
-    console.log('sendPushToMemberships', { membershipIds, payload })
-
     if (!membershipIds.length) return;
 
     const subs = await db
         .select()
         .from(pushSubscription)
         .where(inArray(pushSubscription.membershipId, membershipIds));
-
-    console.log('subs found:', subs.length)
 
     if (!subs.length) return;
 

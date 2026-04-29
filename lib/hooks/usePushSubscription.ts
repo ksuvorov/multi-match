@@ -31,7 +31,7 @@ export function usePushSubscription(membershipId: string | null | undefined) {
             applicationServerKey: toUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
         });
 
-        await fetch("/api/push/subscribe", {
+        await fetch("/api/internal/push/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...sub.toJSON(), membershipId }),
