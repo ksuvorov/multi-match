@@ -10,12 +10,13 @@ export const auth = betterAuth({
 
     baseURL: {
         allowedHosts: [
-            new URL(process.env.BETTER_AUTH_URL!).host,
             '*.vercel.app',
             'localhost:3000',
         ],
         protocol: 'auto',
-        fallback: process.env.BETTER_AUTH_URL!,
+        fallback: process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : 'http://localhost:3000',
     },
 
     database: drizzleAdapter(db, {
