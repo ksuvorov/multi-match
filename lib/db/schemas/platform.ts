@@ -6,10 +6,8 @@ export type FieldSchema = {
     type:       'text' | 'number' | 'select' | 'multiselect' | 'date' | 'location'
     required?:  boolean
     options?:   string[]
-    column?:    'title' | 'description'
-        | 'locationPoint' | 'locationLabel' | 'countryCode' | 'searchRadiusKm'
-        | 'priceAmount' | 'priceCurrency' | 'priceType'
-        | 'availableFrom' | 'availableUntil'
+    column?:    'title' | 'description' | 'location' | 'searchRadiusKm' | 'availableFrom' | 'availableUntil'
+    radiusColumn?: string
 }
 
 export type WizardStep = { title?: string, fields: FieldSchema[] }
