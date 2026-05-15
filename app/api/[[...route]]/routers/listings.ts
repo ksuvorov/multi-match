@@ -1,5 +1,5 @@
 import { waitUntil } from '@vercel/functions'
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 
 import {buildListingSchema, splitListingFields} from '@/lib/db/schemas/validators/listing';
@@ -36,6 +36,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
     const { columns, meta } = splitListingFields(fields, fieldSchema);
 
     const membership = await ensureMembership(platformId, userId, role);
+    const locationRaw = columns.location as { lat: number; lng: number } | undefined
 
     const [listing] = await db
         .insert(schema.listings)
@@ -47,7 +48,12 @@ listingsRouter.post('/', requireAuth, async (c) => {
             meta,
             title:          (columns.title as string)       ?? null,
             description:    (columns.description as string) ?? null,
-            locationPoint:  (columns.locationPoint ?? null) as { lat: number; lng: number } | null,
+            location:       locationRaw
+                ? sql`ST_GeomFromGeoJSON(${JSON.stringify({
+                    type: 'Point',
+                    coordinates: [locationRaw.lng, locationRaw.lat],
+                })})`
+                : null,
             searchRadiusKm: (columns.searchRadiusKm as number) ?? null,
             availableFrom:  columns.availableFrom  ? new Date(columns.availableFrom as string)  : null,
             availableUntil: columns.availableUntil ? new Date(columns.availableUntil as string) : null,
