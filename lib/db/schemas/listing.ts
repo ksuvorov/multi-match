@@ -20,6 +20,9 @@ export const listings = pgTable('listings', {
     title:          text('title'),
     description:    text('description'),
 
+    // --- Tenant custom fields ---
+    meta:           jsonb('meta').$type<Record<string, unknown>>().notNull().default({}),
+
     // --- Geo ---
     locationPoint:  jsonb('locationPoint').$type<{ lat: number; lng: number } | null>().default(null),
     searchRadiusKm: integer('searchRadiusKm'),

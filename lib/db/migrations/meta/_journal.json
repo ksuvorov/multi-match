@@ -99,6 +99,13 @@
       "when": 1778835876799,
       "tag": "0013_rare_winter_soldier",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1778836398305,
+      "tag": "0014_fuzzy_daredevil",
+      "breakpoints": true
     }
   ]
 }
