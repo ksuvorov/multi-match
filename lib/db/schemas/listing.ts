@@ -1,4 +1,4 @@
-import {pgTable, uuid, text, jsonb, timestamp, integer, numeric, pgEnum, index} from 'drizzle-orm/pg-core'
+import {pgTable, uuid, text, jsonb, timestamp, integer, pgEnum, index} from 'drizzle-orm/pg-core'
 import {InferSelectModel} from 'drizzle-orm';
 
 import { platformMembership } from './platformMembership';
@@ -7,8 +7,6 @@ import { platform } from './platform'
 export type Listing = InferSelectModel<typeof listings>
 
 export const listingStatusEnum = pgEnum('listing_status', ['draft', 'active', 'paused', 'closed', 'expired'])
-export const geoTypeEnum       = pgEnum('geo_type',       ['none', 'point', 'point_radius', 'remote'])
-export const priceTypeEnum     = pgEnum('price_type',     ['fixed', 'hourly', 'daily', 'negotiable'])
 
 export const listings = pgTable('listings', {
     // --- Identity ---
@@ -23,25 +21,16 @@ export const listings = pgTable('listings', {
     description:    text('description'),
 
     // --- Tenant custom fields ---
-    schemaVersion:  integer('schemaVersion').notNull().default(1),
     meta:           jsonb('meta').$type<Record<string, unknown>>().notNull().default({}),
 
     // --- Geo ---
-    geoType:        geoTypeEnum('geoType').notNull().default('none'),
     locationPoint:  jsonb('locationPoint').$type<{ lat: number; lng: number } | null>().default(null),
     searchRadiusKm: integer('searchRadiusKm'),
     locationLabel:  text('locationLabel'),
-    countryCode:    text('countryCode'),
-
-    // --- Pricing ---
-    priceAmount:    numeric('priceAmount', { precision: 12, scale: 2 }),
-    priceCurrency:  text('priceCurrency').default('USD'),
-    priceType:      priceTypeEnum('priceType'),
 
     // --- Schedule ---
     availableFrom:  timestamp('availableFrom',  { withTimezone: true }),
     availableUntil: timestamp('availableUntil', { withTimezone: true }),
-    expiresAt:      timestamp('expiresAt',      { withTimezone: true }),
 
     // --- Matching ---
     matchedAt:      timestamp('matchedAt', { withTimezone: true }),
