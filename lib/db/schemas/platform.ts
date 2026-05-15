@@ -12,7 +12,8 @@ export type FieldSchema = {
         | 'availableFrom' | 'availableUntil'
 }
 
-export type ListingSchemas = Record<string, FieldSchema[]>
+export type WizardStep = { title?: string, fields: FieldSchema[] }
+export type ListingSchemas = Record<string, WizardStep[]>
 export type Platform = typeof platform.$inferSelect
 
 export type PlatformConfig = {

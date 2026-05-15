@@ -2,8 +2,6 @@ import { z } from 'zod'
 
 import type { FieldSchema } from '../platform'
 
-export const listingTypeSchema = z.enum(['offer', 'request']);
-
 export function splitListingFields(fields: Record<string, unknown>, fieldSchema: FieldSchema[]) {
     const columns: Record<string, unknown> = {}
     const meta:    Record<string, unknown> = {}

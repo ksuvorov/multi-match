@@ -24,7 +24,7 @@ listingsRouter.post('/', requireAuth, async (c) => {
     })
     if (!p) return c.json({ error: 'Platform not found' }, 404)
 
-    const fieldSchema = p.listingSchemas[role]
+    const fieldSchema = p.listingSchemas[role].flatMap(s => s.fields)
 
     const zodSchema = buildListingSchema(fieldSchema)
     const result    = zodSchema.safeParse(fields)
