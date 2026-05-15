@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
+    <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-sans bg-background", inter.variable)}>
       <body>
         <QueryProvider>
           <AnonymousSessionProvider />

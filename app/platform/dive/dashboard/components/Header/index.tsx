@@ -6,11 +6,16 @@ import { useTransition } from 'react'
 import { EnableNotificationButton } from '@/app/components/EnableNotificationsButton';
 import { usePlatformSession } from '@/app/providers/platformSession'
 import { switchRole } from '@/app/actions/switchRole'
-import {Platform} from '@/lib/db/schemas/platform';
+import { Platform } from '@/lib/db/schemas/platform';
 
 const ROLE_LABELS: Record<string, string> = {
-    provider: 'Provider',
+    provider: 'Diver',
     seeker: 'Seeker',
+}
+
+const ROLE_ICONS: Record<string, string> = {
+    provider: '🤿',
+    seeker: '🔍',
 }
 
 type Props = {
@@ -19,7 +24,7 @@ type Props = {
     activeRole: string | null;
 }
 
-export default function DashboardHeader({roles, activeRole}: Props) {
+export default function DashboardHeader({ roles, activeRole }: Props) {
     const { platform } = usePlatformSession()
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
@@ -33,28 +38,34 @@ export default function DashboardHeader({roles, activeRole}: Props) {
     }
 
     return (
-        <header className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <div className="flex gap-1 bg-muted p-1 rounded-lg">
-                {roles.map((role) => (
-                    <button
-                        key={role}
-                        onClick={() => handleSwitch(role)}
-                        disabled={isPending}
-                        className={[
-                            'px-4 py-1.5 rounded-md text-sm font-medium transition-all',
-                            role === activeRole
-                                ? 'bg-background text-foreground shadow-sm'
-                                : 'text-muted-foreground hover:text-foreground',
-                            isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-                        ].join(' ')}
-                    >
-                        {ROLE_LABELS[role] ?? role}
-                    </button>
-                ))}
+        <header className="flex items-center justify-between px-4 pt-5 pb-4 bg-background">
+            {/* Role switcher pill */}
+            <div className="flex gap-1 bg-muted p-1 rounded-2xl shadow-sm">
+                {roles.map((role) => {
+                    const active = role === activeRole
+                    return (
+                        <button
+                            key={role}
+                            onClick={() => handleSwitch(role)}
+                            disabled={isPending}
+                            aria-pressed={active}
+                            className={[
+                                'flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
+                                active
+                                    ? 'bg-brand text-brand-foreground shadow-md'
+                                    : 'text-muted-foreground hover:text-foreground',
+                                isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+                            ].join(' ')}
+                        >
+                            <span aria-hidden="true">{ROLE_ICONS[role] ?? ''}</span>
+                            {ROLE_LABELS[role] ?? role}
+                        </button>
+                    )
+                })}
             </div>
-            <div>
-                <EnableNotificationButton />
-            </div>
+
+            {/* Notification bell */}
+            <EnableNotificationButton />
         </header>
     )
 }

@@ -17,13 +17,13 @@ export default async function DashboardPage() {
     if (!data?.platformMembership) redirect('/platform/dive');
 
     return (
-        <div>
+        <main className="flex flex-col min-h-dvh bg-background max-w-md mx-auto">
             <Header
                 platformId={data.platform.id}
                 roles={data.platform.config.roles}
                 activeRole={data.platformMembership.activeRole}
             />
             <Tabs membershipId={data.platformMembership.id} activeRole={data.platformMembership.activeRole!} />
-        </div>
+        </main>
     )
 }
