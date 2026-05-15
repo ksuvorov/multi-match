@@ -1,4 +1,5 @@
-import {pgTable, uuid, text, jsonb, timestamp, integer, pgEnum, index} from 'drizzle-orm/pg-core'
+import {pgTable, uuid, text, jsonb, timestamp, integer, pgEnum, index} from 'drizzle-orm/pg-core';
+import { customType } from 'drizzle-orm/pg-core'
 import {InferSelectModel} from 'drizzle-orm';
 
 import { platformMembership } from './platformMembership';
@@ -7,6 +8,21 @@ import { platform } from './platform'
 export type Listing = InferSelectModel<typeof listings>
 
 export const listingStatusEnum = pgEnum('listing_status', ['draft', 'active', 'paused', 'closed', 'expired'])
+
+const geometry = customType<{ data: { lat: number; lng: number } }>({
+    dataType() {
+        return 'geometry(Point, 4326)'
+    },
+    toDriver(value) {
+        return `ST_GeomFromGeoJSON('${JSON.stringify({ type: 'Point', coordinates: [value.lng, value.lat] })}')`
+    },
+    fromDriver(value: unknown) {
+        const hex = Buffer.from(value as string, 'hex')
+        const lng = hex.readDoubleBE(5)
+        const lat = hex.readDoubleBE(13)
+        return { lat, lng }
+    },
+})
 
 export const listings = pgTable('listings', {
     // --- Identity ---
@@ -24,9 +40,8 @@ export const listings = pgTable('listings', {
     meta:           jsonb('meta').$type<Record<string, unknown>>().notNull().default({}),
 
     // --- Geo ---
-    locationPoint:  jsonb('locationPoint').$type<{ lat: number; lng: number } | null>().default(null),
+    location: geometry('location'),
     searchRadiusKm: integer('searchRadiusKm'),
-    locationLabel:  text('locationLabel'),
 
     // --- Schedule ---
     availableFrom:  timestamp('availableFrom',  { withTimezone: true }),
@@ -42,4 +57,5 @@ export const listings = pgTable('listings', {
     index('listings_platform_idx').on(t.platformId),
     index('listings_membership_idx').on(t.membershipId),
     index('listings_platform_role_status_idx').on(t.platformId, t.role, t.status),
+    index('listings_location_idx').using('gist', t.location)
 ])
