@@ -129,7 +129,6 @@ export async function getMembershipMatches(
                 title:         sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.title} ELSE ${listingA.title} END`,
                 description:   sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.description} ELSE ${listingA.description} END`,
                 role:          sql<string>`CASE WHEN ${isMine} THEN ${listingB.role} ELSE ${listingA.role} END`,
-                locationLabel: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.locationLabel} ELSE ${listingA.locationLabel} END`,
                 availableFrom:  sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableFrom} ELSE ${listingA.availableFrom} END`,
                 availableUntil: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableUntil} ELSE ${listingA.availableUntil} END`,
             },
