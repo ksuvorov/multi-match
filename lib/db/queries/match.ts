@@ -1,4 +1,4 @@
-import {and, eq, lte, gte, isNull, or, ne, inArray, aliasedTable, sql} from 'drizzle-orm'
+import {and, eq, lte, gte, isNull, or, ne, inArray, aliasedTable, sql, SQL} from 'drizzle-orm'
 
 import { PlatformConfig } from '@/lib/db/schemas/platform'
 import {listings, matches} from '@/lib/db/schema';
@@ -79,7 +79,14 @@ export async function detectAndCreateMatches(
 }
 
 export type DashboardMatch = Awaited<ReturnType<typeof getMembershipMatches>>[number]
-export async function getMembershipMatches(membershipId: string, role: string) {
+
+export async function getMembershipMatches(
+    membershipId: string,
+    role: string,
+    filter: 'active' | 'all' = 'active',
+) {
+    const now = new Date()
+
     const memberListingIds = db
         .select({ id: listings.id })
         .from(listings)
@@ -91,28 +98,50 @@ export async function getMembershipMatches(membershipId: string, role: string) {
     const listingA = aliasedTable(listings, 'listingA')
     const listingB = aliasedTable(listings, 'listingB')
 
+    const isMine = sql<boolean>`${listingA.membershipId} = ${membershipId}`
+
+    let condition: SQL = or(
+        inArray(matches.listingAId, memberListingIds),
+        inArray(matches.listingBId, memberListingIds),
+    )!
+
+    if (filter === 'active') {
+        condition = and(
+            condition,
+            ne(matches.status, 'rejected'),
+            or(isNull(listingA.availableUntil), gte(listingA.availableUntil, now))!,
+            or(isNull(listingB.availableUntil), gte(listingB.availableUntil, now))!,
+        )!
+    }
+
     return db
         .select({
             match: matches,
-            counterpart: {
-                id:            sql<string>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.id} ELSE ${listingA.id} END`,
-                title:         sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.title} ELSE ${listingA.title} END`,
-                description:   sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.description} ELSE ${listingA.description} END`,
-                role:          sql<string>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.role} ELSE ${listingA.role} END`,
-                locationLabel: sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.locationLabel} ELSE ${listingA.locationLabel} END`,
-                priceAmount:   sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceAmount} ELSE ${listingA.priceAmount} END`,
-                priceCurrency: sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceCurrency} ELSE ${listingA.priceCurrency} END`,
-                priceType:     sql<string | null>`CASE WHEN ${listingA.membershipId} = ${membershipId} THEN ${listingB.priceType} ELSE ${listingA.priceType} END`,
+            myListing: {
+                id:             sql<string>`CASE WHEN ${isMine} THEN ${listingA.id} ELSE ${listingB.id} END`,
+                title:          sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.title} ELSE ${listingB.title} END`,
+                availableFrom:  sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.availableFrom} ELSE ${listingB.availableFrom} END`,
+                availableUntil: sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.availableUntil} ELSE ${listingB.availableUntil} END`,
             },
+            counterpart: {
+                id:            sql<string>`CASE WHEN ${isMine} THEN ${listingB.id} ELSE ${listingA.id} END`,
+                membershipId:  sql<string>`CASE WHEN ${isMine} THEN ${listingB.membershipId} ELSE ${listingA.membershipId} END`,
+                title:         sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.title} ELSE ${listingA.title} END`,
+                description:   sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.description} ELSE ${listingA.description} END`,
+                role:          sql<string>`CASE WHEN ${isMine} THEN ${listingB.role} ELSE ${listingA.role} END`,
+                locationLabel: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.locationLabel} ELSE ${listingA.locationLabel} END`,
+                priceAmount:   sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.priceAmount} ELSE ${listingA.priceAmount} END`,
+                priceCurrency: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.priceCurrency} ELSE ${listingA.priceCurrency} END`,
+                priceType:     sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.priceType} ELSE ${listingA.priceType} END`,
+                availableFrom:  sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableFrom} ELSE ${listingA.availableFrom} END`,
+                availableUntil: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableUntil} ELSE ${listingA.availableUntil} END`,
+            },
+            myApprovedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingAApprovedAt} ELSE ${matches.listingBApprovedAt} END`,
+            counterpartApprovedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBApprovedAt} ELSE ${matches.listingAApprovedAt} END`,
         })
         .from(matches)
         .innerJoin(listingA, eq(listingA.id, matches.listingAId))
         .innerJoin(listingB, eq(listingB.id, matches.listingBId))
-        .where(
-            or(
-                inArray(matches.listingAId, memberListingIds),
-                inArray(matches.listingBId, memberListingIds),
-            )
-        )
+        .where(condition)
         .orderBy(matches.createdAt)
 }

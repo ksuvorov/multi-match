@@ -31,7 +31,7 @@ export default function TabSwitcher({ listings, matches }: Props) {
                             aria-selected={active}
                             onClick={() => setTab(t)}
                             className={[
-                                'relative z-10 flex items-center justify-center gap-1.5 py-3',
+                                'relative z-10 flex items-center justify-center gap-1.5 p-4',
                                 'text-sm font-medium transition-colors',
                                 active ? 'text-foreground' : 'text-muted-foreground',
                             ].join(' ')}
@@ -63,7 +63,7 @@ export default function TabSwitcher({ listings, matches }: Props) {
                 )}
                 {tab === 'matches' && (
                     matches.map((match) =>
-                        <MatchCard key={match.counterpart.id} match={match} />
+                        <MatchCard key={match.match.id} match={match} />
                     )
                 )}
             </div>
