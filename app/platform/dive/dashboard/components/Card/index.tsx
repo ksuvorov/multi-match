@@ -20,7 +20,7 @@ export function Card({
     return (
         <div
             className={cn(
-                "rounded-xl border border-border/40 bg-card px-5 py-4 transition-colors hover:border-border/70",
+                "rounded-xl border border-border/40 bg-card p-4 transition-colors hover:border-border/70",
                 className
             )}
         >
