@@ -4,19 +4,20 @@ import {useForm} from 'react-hook-form';
 import {useCallback} from 'react';
 
 import {buildListingSchema} from '@/lib/db/schemas/validators/listing';
-import {FieldSchema} from '@/lib/db/schemas/platform';
+import {FieldSchema, WizardStep} from '@/lib/db/schemas/platform';
 import {usePlatform} from '@/app/providers/platform';
 
 export default function useListingForm(role: string, onSuccess?: () => void) {
     const platform = usePlatform();
-    const schema = platform.listingSchemas[role];
+    const steps: WizardStep[] = platform.listingSchemas[role];
+    const fields: FieldSchema[] = steps.flatMap(s => s.fields);
 
-    const zodSchema = buildListingSchema(schema);
+    const zodSchema = buildListingSchema(fields);
 
     const {handleSubmit, setValue, watch, formState: {errors}} = useForm({
         resolver: zodResolver(zodSchema),
         defaultValues: Object.fromEntries(
-            schema.map(f => [f.key, f.type === 'multiselect' ? [] : ''])
+            fields.map(f => [f.key, f.type === 'multiselect' ? [] : ''])
         )
     });
 
@@ -61,7 +62,7 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
     }, [createListing]);
 
     return {
-        schema,
+        steps,
         getFieldValue,
         setFieldValue,
         getFieldError,
