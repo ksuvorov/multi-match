@@ -17,8 +17,9 @@ const MOCK_LISTINGS = [
 ]
 
 const MOCK_MATCHES = [
-    { id: 1, title: 'Salvage Operation — Lake Geneva', description: 'Match with experienced salvage team. Overlapping availability confirmed.', period: 'Jun 1 — Jun 15' },
-    { id: 2, title: 'Film Production Dive', description: 'Documentary crew matched. Safety diver role available.', period: 'Jul 10 — Jul 20' },
+    { id: 1, title: 'Salvage Operation — Lake Geneva', description: 'Match with experienced salvage team. Overlapping availability confirmed.', period: 'Jun 1 — Jun 15', myApproval: true, theirApproval: true },
+    { id: 2, title: 'Film Production Dive', description: 'Documentary crew matched. Safety diver role available.', period: 'Jul 10 — Jul 20', myApproval: true, theirApproval: false },
+    { id: 3, title: 'Marina Inspection', description: 'Commercial inspection job at the local marina.', period: 'Aug 5 — Aug 8', myApproval: false, theirApproval: true },
 ]
 
 // ============================================================
@@ -80,6 +81,15 @@ function SearchIcon({ className }: { className?: string }) {
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className={className}>
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
+        </svg>
+    )
+}
+
+function PlusIcon({ className }: { className?: string }) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <line x1="12" x2="12" y1="5" y2="19" />
+            <line x1="5" x2="19" y1="12" y2="12" />
         </svg>
     )
 }
@@ -180,37 +190,39 @@ function Card({ children, className = '' }: { children: React.ReactNode; classNa
     )
 }
 
-function StatusBadge({ status }: { status: string }) {
-    const styles: Record<string, string> = {
-        active: 'bg-[#0a84ff]/10 text-[#0a84ff]',
-        pending: 'bg-amber-50 text-amber-600',
-        closed: 'bg-[#f2f2f7] text-[#8e8e93]',
-    }
-    return (
-        <span className={[
-            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize',
-            styles[status] ?? styles.closed,
-        ].join(' ')}>
-            {status}
-        </span>
-    )
-}
+function MatchBadge({ myApproval, theirApproval }: { myApproval: boolean; theirApproval: boolean }) {
+    const bothApproved = myApproval && theirApproval
+    const waitingForThem = myApproval && !theirApproval
+    const waitingForMe = !myApproval && theirApproval
 
-function MatchBadge() {
-    return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0a84ff]/10 text-[#0a84ff]">
-            <CheckCircleIcon className="w-3 h-3" />
-            Match
-        </span>
-    )
+    if (bothApproved) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-600">
+                <CheckCircleIcon className="w-3 h-3" />
+                Both approved
+            </span>
+        )
+    }
+    if (waitingForThem) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0a84ff]/10 text-[#0a84ff]">
+                Waiting for them
+            </span>
+        )
+    }
+    if (waitingForMe) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600">
+                Waiting for you
+            </span>
+        )
+    }
+    return null
 }
 
 function ListingCard({ listing }: { listing: typeof MOCK_LISTINGS[0] }) {
     return (
         <Card>
-            <div className="mb-2.5">
-                <StatusBadge status={listing.status} />
-            </div>
             <p className="mb-1 text-[15px] font-semibold leading-snug text-[#1c1c1e] text-balance">
                 {listing.title}
             </p>
@@ -229,7 +241,7 @@ function MatchCard({ match }: { match: typeof MOCK_MATCHES[0] }) {
     return (
         <Card>
             <div className="mb-2.5">
-                <MatchBadge />
+                <MatchBadge myApproval={match.myApproval} theirApproval={match.theirApproval} />
             </div>
             <p className="mb-1 text-[15px] font-semibold leading-snug text-[#1c1c1e] text-balance">
                 {match.title}
@@ -253,6 +265,15 @@ function EmptyState({ message }: { message: string }) {
             </div>
             <p className="text-sm font-medium text-[#8e8e93]">{message}</p>
         </div>
+    )
+}
+
+function AddListingButton() {
+    return (
+        <button className="fixed bottom-6 right-6 w-14 h-14 bg-[#0a84ff] text-white rounded-full shadow-lg shadow-[#0a84ff]/30 flex items-center justify-center hover:bg-[#0a84ff]/90 active:scale-95 transition-all duration-200">
+            <PlusIcon className="w-6 h-6" />
+            <span className="sr-only">Add listing</span>
+        </button>
     )
 }
 
@@ -288,7 +309,7 @@ export default function DesignPreviewPage() {
                 <TabBar tab={tab} onTabChange={setTab} counts={counts} />
 
                 {/* Content */}
-                <div className="flex flex-col flex-1 gap-3 px-4 pb-6 overflow-y-auto">
+                <div className="flex flex-col flex-1 gap-3 px-4 pb-24 overflow-y-auto">
                     {tab === 'listings' && (
                         MOCK_LISTINGS.length === 0
                             ? <EmptyState message="No listings yet" />
@@ -304,6 +325,9 @@ export default function DesignPreviewPage() {
                             ))
                     )}
                 </div>
+
+                {/* FAB */}
+                <AddListingButton />
 
             </div>
         </div>
