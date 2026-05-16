@@ -27,7 +27,7 @@ export default function TabSwitcher({ listings, matches }: Props) {
     return (
         <div className="flex flex-col flex-1 min-h-0">
             <Switcher options={options} activeId={tab} onChange={(id) => setTab(id as Tab)} stretch />
-            <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
                 {tab === 'listings' && (
                     listings.map((listing) =>
                         <ListingCard key={listing.id} listing={listing} />

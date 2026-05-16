@@ -15,7 +15,7 @@ export default async function Tabs({ membershipId, activeRole }: Props) {
     ]);
 
     return (
-        <div>
+        <div className="flex flex-col flex-1 min-h-0">
             <Content listings={listings} matches={matches} />
         </div>
     )

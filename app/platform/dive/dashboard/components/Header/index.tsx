@@ -43,7 +43,7 @@ export default function DashboardHeader({roles, activeRole}: Props) {
     )
 
     return (
-        <header className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <header className="flex items-center justify-between">
             <Switcher options={options} activeId={activeRole} onChange={handleSwitch} />
             <div>
                 <EnableNotificationButton />
