@@ -1,4 +1,5 @@
 import {DateTime} from 'luxon';
+import {memo} from 'react';
 
 import {IntervalTuple} from '@/lib/date';
 
@@ -6,9 +7,9 @@ type Props = {
     interval: IntervalTuple;
 }
 
-export default function Period({interval}: Props) {
+export default memo(function Period({interval}: Props) {
     return <div>{formatInterval(interval)}</div>;
-}
+})
 
 const toLocal = (dt: DateTime) => dt.setZone("local");
 
