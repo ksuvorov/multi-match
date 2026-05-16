@@ -2,6 +2,7 @@
 
 import type { FieldSchema } from '@/lib/db/schemas/platform'
 
+import { GeoLocation } from './components/Location/types';
 import { LocationField } from './components/Location'
 import { NumberField } from './components/Number'
 import { TextField } from './components/Text'
@@ -31,7 +32,7 @@ export function DynamicField({ field, value, onChange, error }: Props) {
                 <DateField value={value as string} onChange={onChange} error={error} />
             )}
             {field.type === 'location' && (
-                <LocationField value={value as string} onChange={onChange} error={error} />
+                <LocationField value={value as GeoLocation} onChange={onChange} error={error} />
             )}
 
             {error && <span className="text-sm text-destructive">{error}</span>}

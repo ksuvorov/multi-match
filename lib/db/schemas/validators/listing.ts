@@ -10,7 +10,11 @@ export function splitListingFields(fields: Record<string, unknown>, fieldSchema:
         const value = fields[f.key]
         if (f.column) {
             columns[f.column] = value
-        } else {
+        }
+        if (f.radiusColumn && typeof value === 'object' && value !== null) {
+            columns[f.radiusColumn] = (value as Record<string, unknown>).radiusKm ?? null
+        }
+        if (!f.column && !f.radiusColumn) {
             meta[f.key] = value
         }
     }
@@ -42,11 +46,11 @@ function fieldToZod(field: FieldSchema): z.ZodTypeAny {
             schema = z.string().optional().or(z.literal(''))
             break
         case 'location':
-            schema = z.object({ lat: z.number(), lng: z.number() })
-                .or(z.string().transform(val => {
-                    const [lat, lng] = val.split(',').map(Number)
-                    return { lat, lng }
-                }))
+            schema = z.object({
+                lat:      z.number(),
+                lng:      z.number(),
+                radiusKm: z.number().optional(),
+            })
             break
         default:
             schema = z.unknown()
