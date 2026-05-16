@@ -17,7 +17,7 @@ export default async function DiveLayout({ children }: { children: ReactNode }) 
 
     return (
         <PlatformProvider platform={p}>
-            <div className="platform-dive">
+            <div className="platform-dive h-full">
                 {children}
             </div>
         </PlatformProvider>
