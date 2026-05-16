@@ -6,6 +6,8 @@ import {PlatformProvider} from '@/app/providers/platform';
 import { platform } from '@/lib/db/schemas/platform';
 import db from '@/lib/db';
 
+import './dive.css'
+
 export default async function DiveLayout({ children }: { children: ReactNode }) {
     const p = await db.query.platform.findFirst({
         where: eq(platform.slug, 'dive')
@@ -15,7 +17,9 @@ export default async function DiveLayout({ children }: { children: ReactNode }) 
 
     return (
         <PlatformProvider platform={p}>
-            {children}
+            <div className="platform-dive">
+                {children}
+            </div>
         </PlatformProvider>
     )
 }
