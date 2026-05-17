@@ -21,7 +21,7 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
         )
     });
 
-    const {mutate: createListing} = useMutation({
+    const {mutate: createListing, isPending} = useMutation({
         mutationFn: async (fields: Record<string, unknown>) => {
             const res = await fetch('/api/listings', {
                 method: 'POST',
@@ -68,5 +68,6 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
         getFieldError,
         handleSubmit,
         onSubmit,
+        isPending,
     };
 }

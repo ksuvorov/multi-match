@@ -4,6 +4,7 @@ import {FieldSchema, WizardStep} from '@/lib/db/schemas/platform';
 import {useWizardSteps} from '@/lib/hooks/useWizardSteps';
 import {DynamicField} from '@/app/components/DynamicField';
 import useListingForm from '@/lib/hooks/useListingForm';
+import Button from '@/app/components/Button';
 
 interface Props {
     role: string;
@@ -19,6 +20,7 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
         getFieldError,
         handleSubmit,
         onSubmit,
+        isPending,
     } = useListingForm(role, onSuccess);
 
     const { step, total, next, prev } = useWizardSteps(steps);
@@ -58,14 +60,12 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
 
             <div className="flex gap-2 mt-4">
                 {step > 0 && (
-                    <button type="button" className="md:hidden" onClick={prev}>Back</button>
+                    <Button variant="secondary" className="md:hidden" onClick={prev}>Back</Button>
                 )}
                 {!(step === total - 1) ? (
-                    <button type="button" onClick={next}>Next</button>
+                    <Button onClick={next} stretch>Next</Button>
                 ) : (
-                    <button type="button" onClick={handleSubmit(onSubmit)}>
-                        {submitLabel}
-                    </button>
+                    <Button onClick={handleSubmit(onSubmit)} stretch loading={isPending}>{submitLabel}</Button>
                 )}
             </div>
         </div>
