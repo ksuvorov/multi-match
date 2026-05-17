@@ -53,6 +53,7 @@ export default memo(function Button({
     iconPosition = 'left',
     stretch = false,
     disabled,
+    className,
     ...props
 }: Props) {
     const isDisabled = disabled || loading
@@ -67,6 +68,7 @@ export default memo(function Button({
                 sizeStyles[size],
                 isDisabled ? `${styles.disabled} cursor-not-allowed` : `${styles.base} cursor-pointer`,
                 stretch ? 'w-full' : 'w-fit',
+                className,
             ].join(' ')}
         >
             {loading ? (
