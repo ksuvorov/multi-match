@@ -51,7 +51,7 @@ export function LocationField({ value, onChange, error }: FieldInputProps<GeoLoc
             </div>
 
             <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-500 whitespace-nowrap">Radius</span>
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Radius</span>
                 <input
                     type="range"
                     min={1}
