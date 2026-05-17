@@ -1,8 +1,7 @@
 import {headers} from 'next/headers';
-import Link from 'next/link';
 
 import {getPlatformBootstrap} from '@/lib/db/queries/bootstrap';
-import Button from '@/app/components/button';
+import ActionCard from '@/app/components/ActionCard';
 
 const MAP: Record<string, { title: string; subtitle: string }> = {
     provider: {
@@ -26,13 +25,12 @@ export default async function DiveLanding() {
             <p className="text-muted-foreground">What brings you here?</p>
             <div className="flex-1 flex flex-col gap-4">
                 {roles.map((role) => (
-                    <Link key={role} href={`/platform/${platformSlug}/${role}`} className="flex flex-col flex-1">
-                        <Button
-                            title={MAP[role].title}
-                            subtitle={MAP[role].subtitle}
-                            className="flex-1 w-full flex flex-col items-center justify-center rounded-lg"
-                        />
-                    </Link>
+                    <ActionCard
+                        key={role}
+                        href={`/platform/${platformSlug}/${role}`}
+                        title={MAP[role].title}
+                        subtitle={MAP[role].subtitle}
+                    />
                 ))}
             </div>
         </div>
