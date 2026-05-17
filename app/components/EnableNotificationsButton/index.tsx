@@ -7,7 +7,7 @@ export function EnableNotificationButton() {
     const { platformMembership } = usePlatformSession();
     const { subscribe, status } = usePushSubscription(platformMembership?.id);
 
-    if (status === 'granted') return null;
+    if (status === 'granted' || status === 'denied') return null;
 
     return (
         <button
