@@ -3,10 +3,15 @@ import { anonymous } from 'better-auth/plugins'
 import { betterAuth } from 'better-auth'
 
 import db from '@/lib/db'
+
 import * as schema from './schema'
 
 export const auth = betterAuth({
     secret: process.env.BETTER_AUTH_SECRET!,
+
+    trustedOrigins: process.env.NODE_ENV === 'development'
+        ? (process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') ?? [])
+        : [],
 
     baseURL: {
         allowedHosts: [
