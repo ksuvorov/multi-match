@@ -17,7 +17,7 @@ export default async function DashboardPage() {
     if (!data?.platformMembership) redirect('/platform/dive');
 
     return (
-        <div className="p-3 flex flex-col gap-3 h-screen">
+        <div className="flex flex-col gap-3 h-screen">
             <Header
                 platformId={data.platform.id}
                 roles={data.platform.config.roles}

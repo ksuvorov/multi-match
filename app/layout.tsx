@@ -34,6 +34,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#ffffff',
+  maximumScale: 1,
 }
 
 export default function RootLayout({
@@ -46,7 +47,9 @@ export default function RootLayout({
       <body>
         <QueryProvider>
           <AnonymousSessionProvider />
-          {children}
+          <div className="p-3">
+            {children}
+          </div>
           <SpeedInsights />
           <Analytics />
         </QueryProvider>
