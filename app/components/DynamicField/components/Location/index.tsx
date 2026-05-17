@@ -41,7 +41,7 @@ export function LocationField({ value, onChange, error }: FieldInputProps<GeoLoc
 
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
-                        className="rounded-full border-2 border-blue-500 bg-blue-500/15"
+                        className="rounded-full border-2 border-primary bg-primary/15"
                         style={{
                             width:  radiusPx * 2,
                             height: radiusPx * 2,
