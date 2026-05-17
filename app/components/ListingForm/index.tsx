@@ -21,6 +21,7 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
         handleSubmit,
         onSubmit,
         isPending,
+        isNavigating,
     } = useListingForm(role, onSuccess);
 
     const { step, total, next, prev } = useWizardSteps(steps);
@@ -65,7 +66,7 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
                 {!(step === total - 1) ? (
                     <Button onClick={next} stretch>Next</Button>
                 ) : (
-                    <Button onClick={handleSubmit(onSubmit)} stretch loading={isPending}>{submitLabel}</Button>
+                    <Button onClick={handleSubmit(onSubmit)} stretch loading={isPending || isNavigating}>{submitLabel}</Button>
                 )}
             </div>
         </div>

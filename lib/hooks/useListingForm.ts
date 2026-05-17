@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useMutation} from '@tanstack/react-query';
+import {useCallback, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {useCallback} from 'react';
 
 import {buildListingSchema} from '@/lib/db/schemas/validators/listing';
 import {FieldSchema, WizardStep} from '@/lib/db/schemas/platform';
@@ -11,6 +11,8 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
     const platform = usePlatform();
     const steps: WizardStep[] = platform.listingSchemas[role];
     const fields: FieldSchema[] = steps.flatMap(s => s.fields);
+
+    const [isNavigating, setIsNavigating] = useState(false);
 
     const zodSchema = buildListingSchema(fields);
 
@@ -39,6 +41,7 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
             return res.json();
         },
         onSuccess: () => {
+            setIsNavigating(true);
             onSuccess?.();
         },
         onError: (err) => {
@@ -69,5 +72,6 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
         handleSubmit,
         onSubmit,
         isPending,
+        isNavigating,
     };
 }
