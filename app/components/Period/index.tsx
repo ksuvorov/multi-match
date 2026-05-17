@@ -14,7 +14,7 @@ export default memo(function Period({interval}: Props) {
 const toLocal = (dt: DateTime) => dt.setZone("local");
 
 const formatDay = (dt: DateTime) =>
-    toLocal(dt).toLocaleString(DateTime.DATE_MED);
+    toLocal(dt).toFormat("MMM d, yyyy");
 
 const formatInterval = ([start, end]: IntervalTuple): string => {
     if (!start && !end) return "Any time";
