@@ -1,9 +1,10 @@
-import { memo, ReactNode, ButtonHTMLAttributes } from 'react'
+import { memo, ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes } from 'react'
+import Link from 'next/link'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
-type Props = {
+type BaseProps = {
     children: ReactNode
     variant?: ButtonVariant
     size?: ButtonSize
@@ -11,7 +12,14 @@ type Props = {
     icon?: ReactNode
     iconPosition?: 'left' | 'right'
     stretch?: boolean
-} & ButtonHTMLAttributes<HTMLButtonElement>
+    className?: string
+    href?: string
+    disabled?: boolean
+}
+
+type Props = BaseProps &
+    Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> &
+    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseProps>
 
 const variantStyles: Record<ButtonVariant, { base: string; disabled: string }> = {
     primary: {
@@ -54,54 +62,56 @@ export default memo(function Button({
     stretch = false,
     disabled,
     className,
+    href,
     ...props
 }: Props) {
     const isDisabled = disabled || loading
     const styles = variantStyles[variant]
 
-    return (
-        <button
-            disabled={isDisabled}
-            {...props}
-            className={[
-                'flex items-center justify-center rounded-xl font-semibold transition-all duration-200 select-none',
-                sizeStyles[size],
-                isDisabled ? `${styles.disabled} cursor-not-allowed` : `${styles.base} cursor-pointer`,
-                stretch ? 'w-full' : 'w-fit',
-                className,
-            ].join(' ')}
-        >
+    const classes = [
+        'flex items-center justify-center rounded-xl font-semibold transition-all duration-200 select-none',
+        sizeStyles[size],
+        isDisabled ? `${styles.disabled} cursor-not-allowed` : `${styles.base} cursor-pointer`,
+        stretch ? 'w-full' : 'w-fit',
+        className,
+    ].join(' ')
+
+    const content = (
+        <>
             {loading ? (
                 <svg
                     width={loaderSize[size]}
                     height={loaderSize[size]}
                     viewBox="0 0 16 16"
                     fill="none"
-                    style={{ animation: 'spin 1s linear infinite' }}
                     className="animate-spin shrink-0"
                 >
-                    <circle
-                        cx="8" cy="8" r="6"
-                        stroke="currentColor"
-                        strokeOpacity="0.3"
-                        strokeWidth="2"
-                    />
-                    <path
-                        d="M14 8a6 6 0 0 0-6-6"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                    />
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2" />
+                    <path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
             ) : (
-                icon && iconPosition === 'left' && (
-                    <span className="shrink-0">{icon}</span>
-                )
+                icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>
             )}
             <span>{children}</span>
-            {!loading && icon && iconPosition === 'right' && (
-                <span className="shrink-0">{icon}</span>
-            )}
+            {!loading && icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
+        </>
+    )
+
+    if (href !== undefined) {
+        return (
+            <Link href={href} className={classes} {...(props as AnchorHTMLAttributes<HTMLAnchorElement>)}>
+                {content}
+            </Link>
+        )
+    }
+
+    return (
+        <button
+            disabled={isDisabled}
+            className={classes}
+            {...(props as ButtonHTMLAttributes<HTMLButtonElement>)}
+        >
+            {content}
         </button>
     )
 })

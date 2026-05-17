@@ -8,6 +8,7 @@ import { usePlatformSession } from '@/app/providers/platformSession'
 import { switchRole } from '@/app/actions/switchRole'
 import {Platform} from '@/lib/db/schemas/platform';
 import Switcher from '@/app/components/Switcher';
+import Button from '@/app/components/Button';
 
 const ROLE_LABELS: Record<string, {label: string, icon?: ReactNode}> = {
     provider: {label: 'Provider', icon: '🤿'},
@@ -45,8 +46,9 @@ export default function DashboardHeader({roles, activeRole}: Props) {
     return (
         <header className="flex items-center justify-between">
             <Switcher options={options} activeId={activeRole} onChange={handleSwitch} />
-            <div>
+            <div className="flex gap-2">
                 <EnableNotificationButton />
+                <Button href={`/platform/dive/${activeRole}`}>+</Button>
             </div>
         </header>
     )
