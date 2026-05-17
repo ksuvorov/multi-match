@@ -16,7 +16,7 @@ export default memo(function Switcher({options, activeId, onChange, stretch}: Pr
     return (
         <div
             className={[
-                'gap-1 bg-[#f2f2f7] p-1 rounded-2xl',
+                'gap-1 bg-muted p-1 rounded-2xl',
                 stretch ? 'grid w-full' : 'flex w-fit',
             ].join(' ')}
             style={stretch ? { gridTemplateColumns: `repeat(${options.length}, 1fr)` } : undefined}
@@ -30,8 +30,8 @@ export default memo(function Switcher({options, activeId, onChange, stretch}: Pr
                         className={[
                             'flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
                             active
-                                ? 'bg-[#0a84ff] text-white shadow-md'
-                                : 'text-[#8e8e93] hover:text-[#1c1c1e]',
+                                ? 'bg-primary text-primary-foreground shadow-md'
+                                : 'text-muted-foreground hover:text-foreground',
                         ].join(' ')}
                     >
                         {option.icon && <span>{option.icon}</span>}

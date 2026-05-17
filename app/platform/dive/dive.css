@@ -1,4 +1,7 @@
 .platform-dive {
     --background: #f8f8f8;
     --border: #e5e5ea;
+    --primary: #0a84ff;
+    --primary-foreground: #ffffff;
+    --destructive: #ff3b30;
 }
