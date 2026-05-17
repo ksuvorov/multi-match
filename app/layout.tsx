@@ -47,7 +47,7 @@ export default function RootLayout({
       <body>
         <QueryProvider>
           <AnonymousSessionProvider />
-          <div className="p-3">
+          <div className="flex flex-col flex-1 p-3">
             {children}
           </div>
           <SpeedInsights />
