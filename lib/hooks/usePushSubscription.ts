@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 function toUint8Array(base64: string) {
     const pad = "=".repeat((4 - (base64.length % 4)) % 4);
@@ -10,6 +10,17 @@ function toUint8Array(base64: string) {
 
 export function usePushSubscription(membershipId: string | null | undefined) {
     const [status, setStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle');
+
+    useEffect(() => {
+        if (!membershipId) return;
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+
+        navigator.serviceWorker.register("/sw.js").then((reg) => {
+            reg.pushManager.getSubscription().then((sub) => {
+                if (sub) setStatus('granted');
+            });
+        });
+    }, [membershipId]);
 
     const subscribe = useCallback(async () => {
         if (!membershipId) return;

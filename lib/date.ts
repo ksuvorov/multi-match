@@ -25,3 +25,9 @@ export const intersection = (
 
     return [start, end];
 };
+
+export const toDTFromSQL = (value: string | null) =>
+    value ? DateTime.fromSQL(value, { zone: "utc" }) : null;
+
+export const toDTFromDate = (value: Date | null | undefined): DateTime | null =>
+    value ? DateTime.fromJSDate(value, { zone: "utc" }) : null;
