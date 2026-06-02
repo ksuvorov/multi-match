@@ -30,6 +30,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.9",
+    "lucide-react": "^1.17.0",
     "luxon": "^3.7.2",
     "maplibre-gl": "^5.24.0",
     "next": "^16.2.1",
