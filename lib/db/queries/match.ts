@@ -1,7 +1,7 @@
 import {and, eq, lte, gte, isNull, or, ne, inArray, aliasedTable, sql, SQL} from 'drizzle-orm'
 
 import { PlatformConfig } from '@/lib/db/schemas/platform'
-import {listings, matches} from '@/lib/db/schema';
+import { listings, matches } from '@/lib/db/schema';
 import * as schema from '@/lib/db/schema'
 import db from '@/lib/db'
 
@@ -24,6 +24,19 @@ export async function detectAndCreateMatches(
             eq(schema.listings.status, 'active'),
             ne(schema.listings.membershipId, newListing.membershipId),
         ]
+
+        const radiusMeters = (newListing.searchRadiusKm ?? 0) * 1000
+
+        conditions.push(
+            sql`ST_DWithin(
+                ${schema.listings.location}::geography,
+                ST_GeomFromGeoJSON(${JSON.stringify({
+                        type: 'Point',
+                        coordinates: [newListing.location.lng, newListing.location.lat]
+                    })})::geography,
+                ${radiusMeters} + COALESCE(${schema.listings.searchRadiusKm}, 0) * 1000
+            )`
+        )
 
         if (until !== null) {
             conditions.push(
