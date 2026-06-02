@@ -40,8 +40,8 @@ export const listings = pgTable('listings', {
     meta:           jsonb('meta').$type<Record<string, unknown>>().notNull().default({}),
 
     // --- Geo ---
-    location: geometry('location'),
-    searchRadiusKm: integer('searchRadiusKm'),
+    location: geometry('location').notNull(),
+    searchRadiusKm: integer('searchRadiusKm').notNull(),
 
     // --- Schedule ---
     availableFrom:  timestamp('availableFrom',  { withTimezone: true }),
