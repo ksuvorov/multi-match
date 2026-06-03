@@ -2,6 +2,7 @@
 
 import { usePushSubscription } from '@/lib/hooks/usePushSubscription';
 import { usePlatformSession } from '@/app/providers/platformSession';
+import Button from '@/app/components/Button';
 
 export function EnableNotificationButton() {
     const { platformMembership } = usePlatformSession();
@@ -10,14 +11,15 @@ export function EnableNotificationButton() {
     if (status === 'granted' || status === 'denied') return null;
 
     return (
-        <button
+        <Button
             onClick={subscribe}
             disabled={status === 'loading'}
-            className="relative flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200 bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1c1c1e]"
+            className="relative"
+            variant="secondary"
         >
             <BellIcon className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#0a84ff] rounded-full" />
-        </button>
+        </Button>
     );
 }
 
