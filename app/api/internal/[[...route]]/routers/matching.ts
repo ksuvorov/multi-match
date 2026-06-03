@@ -53,7 +53,7 @@ matchingRouter.post('/listing', async (c) => {
 
                 void sendPushToMemberships([membershipId], {
                     title: `New match: "${listing.title}" 🎉`,
-                    body: `Tap to review your match on ${platformRow.config.appName}`,
+                    body: `Tap to review your match`,
                     url: `/platform/${platformRow.slug}/match/${matchId}`,
                 })
             }

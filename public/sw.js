@@ -15,7 +15,11 @@ self.addEventListener("notificationclick", (event) => {
     clients.matchAll({ type: "window" }).then((list) => {
       const url = event.notification.data?.url ?? "/";
       const win = list.find((c) => "focus" in c);
-      return win ? win.focus() : clients.openWindow(url);
+      if (win) {
+        win.navigate(url);
+        return win.focus();
+      }
+      return clients.openWindow(url);
     })
   );
 });
