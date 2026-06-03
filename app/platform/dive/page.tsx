@@ -1,6 +1,7 @@
-import {headers} from 'next/headers';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
-import {getPlatformBootstrap} from '@/lib/db/queries/bootstrap';
+import { getPlatformBootstrap } from '@/lib/db/queries/bootstrap';
 import ActionCard from '@/app/components/ActionCard';
 
 const MAP: Record<string, { title: string; subtitle: string }> = {
@@ -17,7 +18,12 @@ const MAP: Record<string, { title: string; subtitle: string }> = {
 export default async function DiveLanding() {
     const h = await headers()
     const platformSlug = h.get('x-platform-slug')!
+
     const data = await getPlatformBootstrap(platformSlug)
+    if (data?.platformMembership) {
+        redirect('/platform/dive/dashboard')
+    }
+
     const roles = data?.platform.config.roles ?? []
     return (
         <div className="h-full w-full flex flex-col gap-6 text-center p-6">
