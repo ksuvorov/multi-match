@@ -48,16 +48,15 @@ matchingRouter.post('/listing', async (c) => {
     try {
         const newMatches = await detectAndCreateMatches(listing, platformRow.config)
         if (newMatches.length) {
-            const membershipIds = [
-                listing.membershipId,
-                ...newMatches.map((m) => m.membershipId),
-            ].filter(Boolean) as string[];
+            for (const { matchId, membershipId } of newMatches) {
+                if (!membershipId) continue
 
-            void sendPushToMemberships(membershipIds, {
-                title: "New match! 🎉",
-                body: "You have a new match.",
-                url: "/platform/dive/dashboard",
-            });
+                void sendPushToMemberships([membershipId], {
+                    title: `New match: "${listing.title}" 🎉`,
+                    body: `Tap to review your match on ${platformRow.config.appName}`,
+                    url: `/platform/${platformRow.slug}/match/${matchId}`,
+                })
+            }
         }
 
         return c.json({ status: 'ok' })

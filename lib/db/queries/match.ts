@@ -73,25 +73,27 @@ export async function detectAndCreateMatches(
             .from(schema.listings)
             .where(and(...conditions))
 
-        if (candidates.length) {
-            const values = candidates.map(candidate => ({
-                platformId: newListing.platformId,
-                listingAId: newListing.id,
-                listingBId: candidate.id,
-                origin: 'auto' as const,
-            }))
-
-            await db
+        const insertedMatches = candidates.length
+            ? await db
                 .insert(schema.matches)
-                .values(values)
+                .values(candidates.map(candidate => ({
+                    platformId: newListing.platformId,
+                    listingAId: newListing.id,
+                    listingBId: candidate.id,
+                    origin: 'auto' as const,
+                })))
                 .onConflictDoNothing()
-        }
+                .returning({ id: schema.matches.id })
+            : []
 
         await db.update(schema.listings)
             .set({ matchedAt: new Date(), matchingError: null })
             .where(eq(schema.listings.id, newListing.id))
 
-        return candidates
+        return insertedMatches.map((m, i) => ({
+            matchId: m.id,
+            membershipId: candidates[i].membershipId,
+        }))
     } catch (e) {
         await db.update(schema.listings)
             .set({ matchingError: String(e) })
