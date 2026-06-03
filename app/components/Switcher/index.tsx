@@ -28,7 +28,7 @@ export default memo(function Switcher({options, activeId, onChange, stretch}: Pr
                         key={option.id}
                         onClick={() => onChange(option.id)}
                         className={[
-                            'flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
+                            'flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
                             active
                                 ? 'bg-primary text-primary-foreground shadow-md'
                                 : 'text-muted-foreground hover:text-foreground',

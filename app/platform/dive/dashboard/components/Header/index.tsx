@@ -13,8 +13,8 @@ import Button from '@/app/components/Button';
 import QR from './components/QR';
 
 const ROLE_LABELS: Record<string, {label: string, icon?: ReactNode}> = {
-    provider: {label: 'Provider', icon: '🤿'},
-    seeker: {label: 'Seeker', icon: '🔍'},
+    provider: {label: 'Diver', icon: '🤿'},
+    seeker: {label: 'Client', icon: '🔍'},
 }
 
 type Props = {
