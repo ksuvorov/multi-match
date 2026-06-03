@@ -17,6 +17,7 @@ manifestRouter.get('/', async (c) => {
         name: p?.config?.appName ?? 'App',
         short_name: p?.config?.appName ?? 'App',
         start_url: p ? `/platform/${slug}` : '/',
+        scope: '/platform/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#000000',

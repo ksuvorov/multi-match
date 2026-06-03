@@ -11,5 +11,24 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(clients.openWindow(event.notification.data?.url ?? "/"));
+
+  const url = event.notification.data?.url ?? "/";
+
+  event.waitUntil(
+    clients
+      .matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      })
+      .then(async (clientList) => {
+        for (const client of clientList) {
+          if ("navigate" in client) {
+            await client.navigate(url);
+            return client.focus();
+          }
+        }
+
+        return clients.openWindow(url);
+      }),
+  );
 });

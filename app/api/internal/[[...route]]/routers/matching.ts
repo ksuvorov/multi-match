@@ -1,4 +1,5 @@
 import { eq, isNull, and } from 'drizzle-orm'
+import { waitUntil } from '@vercel/functions'
 import { Hono } from 'hono'
 
 import { detectAndCreateMatches } from '@/lib/db/queries/match'
@@ -48,15 +49,13 @@ matchingRouter.post('/listing', async (c) => {
     try {
         const newMatches = await detectAndCreateMatches(listing, platformRow.config)
         if (newMatches.length) {
-            for (const { matchId, membershipId } of newMatches) {
-                if (!membershipId) continue
-
-                void sendPushToMemberships([membershipId], {
+            waitUntil(Promise.all(newMatches.map(({ matchId, membershipId }) =>
+                sendPushToMemberships([membershipId], {
                     title: `New match: "${listing.title}" 🎉`,
                     body: `Tap to review your match`,
                     url: `/platform/${platformRow.slug}/match/${matchId}`,
                 })
-            }
+            )))
         }
 
         return c.json({ status: 'ok' })
