@@ -53,7 +53,7 @@ matchingRouter.post('/listing', async (c) => {
                 sendPushToMemberships([membershipId], {
                     title: `New match: "${listing.title}" 🎉`,
                     body: `Tap to review your match`,
-                    url: `/platform/${platformRow.slug}/match/${matchId}`,
+                    url: `https://multi-match.vercel.app/platform/${platformRow.slug}/match/${matchId}`,
                 })
             )))
         }
