@@ -11,15 +11,5 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(
-    clients.matchAll({ type: "window" }).then((list) => {
-      const url = event.notification.data?.url ?? "/";
-      const win = list.find((c) => "focus" in c);
-      if (win) {
-        win.navigate(url);
-        return win.focus();
-      }
-      return clients.openWindow(url);
-    })
-  );
+  event.waitUntil(clients.openWindow(event.notification.data?.url ?? "/"));
 });
