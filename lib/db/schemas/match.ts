@@ -14,6 +14,7 @@ export const matchOriginEnum = pgEnum('match_origin', [
     'initiated',
 ])
 
+export type Match = typeof matches.$inferSelect
 export const matches = pgTable('matches', {
     id:           uuid('id').primaryKey().defaultRandom(),
     platformId:   uuid('platformId').notNull().references(() => platform.id, { onDelete: 'cascade' }),

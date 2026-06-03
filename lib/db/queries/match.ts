@@ -1,9 +1,16 @@
 import {and, eq, lte, gte, isNull, or, ne, inArray, aliasedTable, sql, SQL} from 'drizzle-orm'
 
+import { listings, matchContacts, matches } from '@/lib/db/schema';
 import { PlatformConfig } from '@/lib/db/schemas/platform'
-import { listings, matches } from '@/lib/db/schema';
+import { parseWKBPoint } from '@/lib/location';
 import * as schema from '@/lib/db/schema'
 import db from '@/lib/db'
+
+export async function getMatch(id: string) {
+    return db.query.matches.findFirst({
+        where: eq(schema.matches.id, id),
+    })
+}
 
 export async function detectAndCreateMatches(
     newListing: typeof schema.listings.$inferSelect,
@@ -28,14 +35,19 @@ export async function detectAndCreateMatches(
         const radiusMeters = (newListing.searchRadiusKm ?? 0) * 1000
 
         conditions.push(
-            sql`ST_DWithin(
-                ${schema.listings.location}::geography,
-                ST_GeomFromGeoJSON(${JSON.stringify({
-                        type: 'Point',
-                        coordinates: [newListing.location.lng, newListing.location.lat]
-                    })})::geography,
-                ${radiusMeters} + COALESCE(${schema.listings.searchRadiusKm}, 0) * 1000
-            )`
+            sql`
+                ST_DWithin(
+                    ${schema.listings.location}::geography,
+                    ST_SetSRID(
+                        ST_MakePoint(
+                            ${newListing.location.lng},
+                            ${newListing.location.lat}
+                        ),
+                        4326
+                    )::geography,
+                    ${radiusMeters} + COALESCE(${schema.listings.searchRadiusKm}, 0) * 1000
+                )
+            `
         )
 
         if (until !== null) {
@@ -153,4 +165,77 @@ export async function getMembershipMatches(
         .innerJoin(listingB, eq(listingB.id, matches.listingBId))
         .where(condition)
         .orderBy(matches.createdAt)
+}
+
+export type MatchDetail = NonNullable<Awaited<ReturnType<typeof getMatchDetail>>>
+export type MatchListingData = MatchDetail['myListing']
+export async function getMatchDetail(matchId: string, membershipId: string) {
+    const listingA = aliasedTable(listings, 'listingA')
+    const listingB = aliasedTable(listings, 'listingB')
+
+    const contactA = aliasedTable(matchContacts, 'contactA')
+    const contactB = aliasedTable(matchContacts, 'contactB')
+
+    const isMine = sql<boolean>`${listingA.membershipId} = ${membershipId}`
+
+    const rows = await db
+        .select({
+            match: matches,
+            myListing: {
+                id:             sql<string>`CASE WHEN ${isMine} THEN ${listingA.id} ELSE ${listingB.id} END`,
+                role:           sql<string>`CASE WHEN ${isMine} THEN ${listingA.role} ELSE ${listingB.role} END`,
+                title:          sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.title} ELSE ${listingB.title} END`,
+                description:    sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.description} ELSE ${listingB.description} END`,
+                meta:           sql<Record<string, unknown>>`CASE WHEN ${isMine} THEN ${listingA.meta} ELSE ${listingB.meta} END`,
+                availableFrom:  sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.availableFrom} ELSE ${listingB.availableFrom} END`,
+                availableUntil: sql<string | null>`CASE WHEN ${isMine} THEN ${listingA.availableUntil} ELSE ${listingB.availableUntil} END`,
+                location:       sql<string>`CASE WHEN ${isMine} THEN ${listingA.location} ELSE ${listingB.location} END`,
+                searchRadiusKm: sql<number>`CASE WHEN ${isMine} THEN ${listingA.searchRadiusKm} ELSE ${listingB.searchRadiusKm} END`,
+            },
+            counterpart: {
+                id:             sql<string>`CASE WHEN ${isMine} THEN ${listingB.id} ELSE ${listingA.id} END`,
+                membershipId:   sql<string>`CASE WHEN ${isMine} THEN ${listingB.membershipId} ELSE ${listingA.membershipId} END`,
+                role:           sql<string>`CASE WHEN ${isMine} THEN ${listingB.role} ELSE ${listingA.role} END`,
+                title:          sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.title} ELSE ${listingA.title} END`,
+                description:    sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.description} ELSE ${listingA.description} END`,
+                meta:           sql<Record<string, unknown>>`CASE WHEN ${isMine} THEN ${listingB.meta} ELSE ${listingA.meta} END`,
+                availableFrom:  sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableFrom} ELSE ${listingA.availableFrom} END`,
+                availableUntil: sql<string | null>`CASE WHEN ${isMine} THEN ${listingB.availableUntil} ELSE ${listingA.availableUntil} END`,
+                location:       sql<string>`CASE WHEN ${isMine} THEN ${listingB.location} ELSE ${listingA.location} END`,
+                searchRadiusKm: sql<number>`CASE WHEN ${isMine} THEN ${listingB.searchRadiusKm} ELSE ${listingA.searchRadiusKm} END`,
+            },
+            myApprovedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingAApprovedAt} ELSE ${matches.listingBApprovedAt} END`,
+            counterpartApprovedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBApprovedAt} ELSE ${matches.listingAApprovedAt} END`,
+            counterpartContact: sql<string | null>`CASE WHEN ${isMine} THEN ${contactB.contact} ELSE ${contactA.contact} END`,
+        })
+        .from(matches)
+        .innerJoin(listingA, eq(listingA.id, matches.listingAId))
+        .innerJoin(listingB, eq(listingB.id, matches.listingBId))
+        .leftJoin(contactA, and(eq(contactA.matchId, matches.id), eq(contactA.membershipId, listingA.membershipId)))
+        .leftJoin(contactB, and(eq(contactB.matchId, matches.id), eq(contactB.membershipId, listingB.membershipId)))
+        .where(
+            and(
+                eq(matches.id, matchId),
+                or(
+                    inArray(matches.listingAId, db.select({ id: listings.id }).from(listings).where(eq(listings.membershipId, membershipId))),
+                    inArray(matches.listingBId, db.select({ id: listings.id }).from(listings).where(eq(listings.membershipId, membershipId))),
+                )!
+            )
+        )
+        .limit(1)
+
+    const row = rows[0]
+    if (!row) return null
+
+    return {
+        ...row,
+        myListing: {
+            ...row.myListing,
+            location: parseWKBPoint(row.myListing.location),
+        },
+        counterpart: {
+            ...row.counterpart,
+            location: parseWKBPoint(row.counterpart.location),
+        },
+    }
 }

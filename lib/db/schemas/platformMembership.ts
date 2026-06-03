@@ -4,7 +4,6 @@ import { user } from '../../auth/schema'
 import { platform } from './platform'
 
 export type PlatformMembership = typeof platformMembership.$inferSelect
-
 export const platformMembership = pgTable('platformMembership', {
     id:         uuid('id').primaryKey().defaultRandom(),
     platformId: uuid('platformId').notNull().references(() => platform.id, { onDelete: 'cascade' }),
