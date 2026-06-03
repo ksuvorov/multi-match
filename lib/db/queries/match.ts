@@ -79,8 +79,6 @@ export async function detectAndCreateMatches(
                 listingAId: newListing.id,
                 listingBId: candidate.id,
                 origin: 'auto' as const,
-                listingAApprovedAt: null,
-                listingBApprovedAt: null,
             }))
 
             await db
@@ -133,7 +131,8 @@ export async function getMembershipMatches(
     if (filter === 'active') {
         condition = and(
             condition,
-            ne(matches.status, 'rejected'),
+            isNull(matches.listingARejectedAt),
+            isNull(matches.listingBRejectedAt),
             or(isNull(listingA.availableUntil), gte(listingA.availableUntil, now))!,
             or(isNull(listingB.availableUntil), gte(listingB.availableUntil, now))!,
         )!
@@ -159,6 +158,8 @@ export async function getMembershipMatches(
             },
             myApprovedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingAApprovedAt} ELSE ${matches.listingBApprovedAt} END`,
             counterpartApprovedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBApprovedAt} ELSE ${matches.listingAApprovedAt} END`,
+            myRejectedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingARejectedAt} ELSE ${matches.listingBRejectedAt} END`,
+            counterpartRejectedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBRejectedAt} ELSE ${matches.listingARejectedAt} END`,
         })
         .from(matches)
         .innerJoin(listingA, eq(listingA.id, matches.listingAId))
@@ -206,7 +207,9 @@ export async function getMatchDetail(matchId: string, membershipId: string) {
             },
             myApprovedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingAApprovedAt} ELSE ${matches.listingBApprovedAt} END`,
             counterpartApprovedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBApprovedAt} ELSE ${matches.listingAApprovedAt} END`,
-            counterpartContact: sql<string | null>`CASE WHEN ${isMine} THEN ${contactB.contact} ELSE ${contactA.contact} END`,
+            myRejectedAt:          sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingARejectedAt} ELSE ${matches.listingBRejectedAt} END`,
+            counterpartRejectedAt: sql<string | null>`CASE WHEN ${isMine} THEN ${matches.listingBRejectedAt} ELSE ${matches.listingARejectedAt} END`,
+            counterpartContact:    sql<string | null>`CASE WHEN ${isMine} THEN ${contactB.contact} ELSE ${contactA.contact} END`,
         })
         .from(matches)
         .innerJoin(listingA, eq(listingA.id, matches.listingAId))
