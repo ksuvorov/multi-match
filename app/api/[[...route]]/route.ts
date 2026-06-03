@@ -1,8 +1,8 @@
 import { handle } from 'hono/vercel';
 import { Hono } from 'hono';
 
-import {listingsRouter} from './routers/listings';
-import {manifestRouter} from './routers/manifest';
+import { listingsRouter } from './routers/listings';
+import { manifestRouter } from './routers/manifest';
 
 export const runtime = 'edge'
 

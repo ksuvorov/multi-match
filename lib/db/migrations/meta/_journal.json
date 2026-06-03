@@ -113,6 +113,34 @@
       "when": 1778876814381,
       "tag": "0015_chubby_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1780329088547,
+      "tag": "0016_worried_dexter_bennett",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1780422000185,
+      "tag": "0017_slippery_mandarin",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1780485810638,
+      "tag": "0018_narrow_grey_gargoyle",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1780486047073,
+      "tag": "0019_rainy_tiger_shark",
+      "breakpoints": true
     }
   ]
 }

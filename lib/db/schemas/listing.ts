@@ -1,11 +1,8 @@
-import {pgTable, uuid, text, jsonb, timestamp, integer, pgEnum, index} from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, jsonb, timestamp, integer, pgEnum, index } from 'drizzle-orm/pg-core';
 import { customType } from 'drizzle-orm/pg-core'
-import {InferSelectModel} from 'drizzle-orm';
 
 import { platformMembership } from './platformMembership';
 import { platform } from './platform'
-
-export type Listing = InferSelectModel<typeof listings>
 
 export const listingStatusEnum = pgEnum('listing_status', ['draft', 'active', 'paused', 'closed', 'expired'])
 
@@ -17,13 +14,21 @@ const geometry = customType<{ data: { lat: number; lng: number } }>({
         return `ST_GeomFromGeoJSON('${JSON.stringify({ type: 'Point', coordinates: [value.lng, value.lat] })}')`
     },
     fromDriver(value: unknown) {
-        const hex = Buffer.from(value as string, 'hex')
-        const lng = hex.readDoubleBE(5)
-        const lat = hex.readDoubleBE(13)
+        const hex = value as string
+        const buf = Buffer.from(hex, 'hex')
+
+        const geometryType = buf.readUInt32LE(1)
+        const hasSrid = (geometryType & 0x20000000) !== 0
+        const coordOffset = hasSrid ? 9 : 5
+
+        const lng = buf.readDoubleLE(coordOffset)
+        const lat = buf.readDoubleLE(coordOffset + 8)
+
         return { lat, lng }
-    },
+    }
 })
 
+export type Listing = typeof listings.$inferSelect
 export const listings = pgTable('listings', {
     // --- Identity ---
     id:             uuid('id').primaryKey().defaultRandom(),
@@ -40,8 +45,8 @@ export const listings = pgTable('listings', {
     meta:           jsonb('meta').$type<Record<string, unknown>>().notNull().default({}),
 
     // --- Geo ---
-    location: geometry('location'),
-    searchRadiusKm: integer('searchRadiusKm'),
+    location: geometry('location').notNull(),
+    searchRadiusKm: integer('searchRadiusKm').notNull(),
 
     // --- Schedule ---
     availableFrom:  timestamp('availableFrom',  { withTimezone: true }),
