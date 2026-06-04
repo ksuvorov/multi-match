@@ -18,11 +18,11 @@ interface Props {
 }
 
 export default function TabSwitcher({ listings, matches }: Props) {
-    const [tab, setTab] = useState<Tab>('listings')
+    const [tab, setTab] = useState<Tab>('matches')
 
     const options = useMemo(() => [
-        { id: 'listings', label: 'Listings', badge: <Counter count={listings.length} /> },
         { id: 'matches', label: 'Matches', badge: <Counter count={matches.length} /> },
+        { id: 'listings', label: 'Listings', badge: <Counter count={listings.length} /> },
     ], [listings.length, matches.length])
     return (
         <div className="flex flex-col flex-1 min-h-0">
