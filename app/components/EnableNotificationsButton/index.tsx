@@ -3,12 +3,16 @@
 import { usePushSubscription } from '@/lib/hooks/usePushSubscription';
 import { usePlatformSession } from '@/app/providers/platformSession';
 import Button from '@/app/components/Button';
+import { isStandalone } from '@/lib/pwa';
 
 export function EnableNotificationButton() {
     const { platformMembership } = usePlatformSession();
     const { subscribe, status } = usePushSubscription(platformMembership?.id);
 
-    if (status === 'granted' || status === 'denied') return null;
+    if (
+        !isStandalone() ||
+        status === 'granted' || status === 'denied'
+    ) return null;
 
     return (
         <Button
