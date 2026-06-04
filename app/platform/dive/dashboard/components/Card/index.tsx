@@ -8,6 +8,7 @@ interface DashboardCardProps {
     description: string | null
     footer?: ReactNode
     className?: string
+    disabled?: boolean
 }
 
 export function Card({
@@ -16,14 +17,18 @@ export function Card({
   description,
   footer,
   className,
+  disabled,
 }: DashboardCardProps) {
     return (
         <div
             className={cn(
                 'rounded-2xl border border-border/50 bg-card px-4 py-4',
                 'shadow-sm shadow-black/[0.04]',
-                'transition-all duration-200 hover:border-border hover:shadow-md hover:shadow-black/[0.07]',
-                'active:scale-[0.99]',
+                !disabled && [
+                    'transition-all duration-200 hover:border-border hover:shadow-md hover:shadow-black/[0.07]',
+                    'active:scale-[0.99] cursor-pointer',
+                ],
+                disabled && 'opacity-70 bg-muted/50',
                 className,
             )}
         >

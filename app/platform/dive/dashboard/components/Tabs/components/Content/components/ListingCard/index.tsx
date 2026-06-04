@@ -26,6 +26,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <Card
             title={listing.title}
             description={listing.description}
+            disabled={true}
             footer={
                 <div className="flex items-center gap-1.5">
                     <CalendarIcon className="w-3.5 h-3.5" />
