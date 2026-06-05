@@ -26,24 +26,35 @@ export const useEnhance = ({ match }: Props) => {
     const inputRef = useRef<HTMLInputElement>(null)
 
     async function handleApprove() {
+        if (!contact.trim()) {
+            inputRef.current?.focus();
+            return;
+        }
+
         setLoading('approve');
         try {
             const res = await approveMatch(m.id, contact.trim());
-            if (!res.ok) return;
+            if (!res.ok) {
+                setLoading(null);
+                return;
+            }
             router.refresh();
-        } finally {
+        } catch {
             setLoading(null);
         }
     }
 
     async function handleReject() {
-        setLoading('reject')
+        setLoading('reject');
         try {
             const res = await rejectMatch(m.id);
-            if (!res.ok) return;
-            router.push('/platform/dive/dashboard')
-        } finally {
-            setLoading(null)
+            if (!res.ok) {
+                setLoading(null);
+                return;
+            }
+            router.push('/platform/dive/dashboard');
+        } catch {
+            setLoading(null);
         }
     }
 
