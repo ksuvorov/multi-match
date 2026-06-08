@@ -23,40 +23,43 @@ export function splitListingFields(fields: Record<string, unknown>, fieldSchema:
 }
 
 function fieldToZod(field: FieldSchema): z.ZodTypeAny {
-    let schema: z.ZodTypeAny
-
     switch (field.type) {
         case 'text':
-            schema = z.string()
-            break
+            return field.required
+                ? z.string().min(1, 'Required')
+                : z.string().optional().or(z.literal(''))
+
         case 'number':
-            schema = z.coerce.number()
-            break
+            return field.required
+                ? z.coerce.number()
+                : z.coerce.number().optional()
+
         case 'select':
-            schema = field.options?.length
+            const selectBase = field.options?.length
                 ? z.enum(field.options as [string, ...string[]])
                 : z.string()
-            break
+            return field.required ? selectBase : selectBase.optional()
+
         case 'multiselect':
-            schema = field.options?.length
+            const msBase = field.options?.length
                 ? z.array(z.enum(field.options as [string, ...string[]]))
                 : z.array(z.string())
-            break
+            return field.required ? msBase.min(1, 'Required') : msBase
+
         case 'date':
-            schema = z.string().optional().or(z.literal(''))
-            break
+            return z.string().optional().or(z.literal(''))
+
         case 'location':
-            schema = z.object({
+            const locBase = z.object({
                 lat:      z.number(),
                 lng:      z.number(),
                 radiusKm: z.number().optional(),
             })
-            break
-        default:
-            schema = z.unknown()
-    }
+            return field.required ? locBase : locBase.optional()
 
-    return field.required ? schema : schema.optional()
+        default:
+            return z.unknown()
+    }
 }
 
 export function buildListingSchema(fieldSchemas: FieldSchema[]) {

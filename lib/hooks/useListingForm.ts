@@ -19,7 +19,14 @@ export default function useListingForm(role: string, onSuccess?: () => void) {
     const {handleSubmit, setValue, watch, formState: {errors}} = useForm({
         resolver: zodResolver(zodSchema),
         defaultValues: Object.fromEntries(
-            fields.map(f => [f.key, f.type === 'multiselect' ? [] : ''])
+            fields.map(f => [
+                f.key,
+                f.type === 'multiselect'
+                    ? []
+                    : f.type === 'location'
+                        ? undefined
+                        : ''
+            ])
         )
     });
 
