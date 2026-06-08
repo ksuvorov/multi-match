@@ -18,12 +18,13 @@ export default function QR() {
     return (
         <div className="flex gap-2">
             <Button
-                onClick={showQR}
-                className="text-xl leading-none"
-                title="Share QR"
                 variant="secondary"
+                size="icon"
+                onClick={showQR}
+                title="Share QR"
+                className="rounded-lg"
             >
-                <QrCode />
+                <QrCode className="w-4 h-4" />
             </Button>
             {isPopupVisible && <Modal onClose={hideQR} />}
         </div>

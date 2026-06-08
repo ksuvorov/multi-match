@@ -1,7 +1,7 @@
-import {redirect} from 'next/navigation';
-import {headers} from 'next/headers';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
-import {getPlatformBootstrap} from '@/lib/db/queries/bootstrap';
+import { getPlatformBootstrap } from '@/lib/db/queries/bootstrap';
 
 import Header from './components/Header';
 import Tabs from './components/Tabs';
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
     if (!data?.platformMembership) redirect('/platform/dive');
 
     return (
-        <div className="flex flex-col gap-3 h-screen">
+        <div className="flex flex-col gap-3 p-3 h-screen">
             <Header
                 platformId={data.platform.id}
                 roles={data.platform.config.roles}

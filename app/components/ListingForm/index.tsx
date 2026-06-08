@@ -1,10 +1,13 @@
 'use client'
 
-import {FieldSchema, WizardStep} from '@/lib/db/schemas/platform';
-import {useWizardSteps} from '@/lib/hooks/useWizardSteps';
-import {DynamicField} from '@/app/components/DynamicField';
+import { useRouter } from 'next/navigation';
+
+import { FieldSchema, WizardStep } from '@/lib/db/schemas/platform';
+import { useWizardSteps } from '@/lib/hooks/useWizardSteps';
+import { DynamicField } from '@/app/components/DynamicField';
 import useListingForm from '@/lib/hooks/useListingForm';
 import Button from '@/app/components/Button';
+import {ArrowLeftIcon} from 'lucide-react';
 
 interface Props {
     role: string;
@@ -13,6 +16,7 @@ interface Props {
 }
 
 export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: Props) {
+    const router = useRouter();
     const {
         steps,
         getFieldValue,
@@ -27,8 +31,7 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
     const { step, total, next, prev } = useWizardSteps(steps);
 
     const renderStep = (s: WizardStep) => (
-        <div className="mb-8">
-            {s.title && <h2 className="text-lg font-medium mb-4">{s.title}</h2>}
+        <div className="flex flex-col flex-1 w-full min-w-0 p-4 pb-0 gap-4">
             {renderFields(s.fields)}
         </div>
     )
@@ -45,8 +48,7 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
         ))
 
     return (
-        <div>
-            {/* Desktop: previous steps */}
+        <div className="min-h-full flex flex-col">
             <div className="hidden md:block">
                 {steps.slice(0, step).map((s, i) => (
                     <div key={i}>
@@ -56,17 +58,24 @@ export default function ListingForm({role, submitLabel = 'Submit', onSuccess}: P
                 ))}
             </div>
 
-            {/* Current step: both mobile and desktop */}
             {renderStep(steps[step])}
 
-            <div className="flex gap-2 mt-4">
-                {step > 0 && (
-                    <Button variant="secondary" className="md:hidden" onClick={prev}>Back</Button>
-                )}
+            <div className="flex gap-2 p-4">
+                {step > 0
+                    ? (
+                        <Button variant="secondary" className="md:hidden" onClick={prev}>
+                            <ArrowLeftIcon />
+                        </Button>
+                    ) : (
+                        <Button variant="secondary" className="md:hidden" onClick={router.back}>
+                            <ArrowLeftIcon />
+                        </Button>
+                    )
+                }
                 {!(step === total - 1) ? (
-                    <Button onClick={next} stretch>Next</Button>
+                    <Button variant="primary" onClick={next} stretch>Next</Button>
                 ) : (
-                    <Button onClick={handleSubmit(onSubmit)} stretch loading={isPending || isNavigating}>{submitLabel}</Button>
+                    <Button variant="primary" onClick={handleSubmit(onSubmit)} stretch loading={isPending || isNavigating}>{submitLabel}</Button>
                 )}
             </div>
         </div>
