@@ -10,7 +10,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { useEnhance } from './hooks';
 
 const MAP_STYLE = 'https://demotiles.maplibre.org/style.json';
-const ROOT_STYLES = { width: '100%', height: '100%', borderRadius: 10 };
+const ROOT_STYLES = { width: '100%', height: '100%' };
 
 type Props = {
     primary: MatchListingData,

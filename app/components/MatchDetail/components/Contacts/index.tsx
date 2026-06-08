@@ -1,26 +1,40 @@
 type Props = {
-    contact?: string
-    iApproved?: boolean
+    contact?:    string
+    iApproved?:  boolean
     isRejected?: boolean
 }
+
 export default function Contacts({ contact, iApproved, isRejected }: Props) {
     const className = `
-        flex items-center justify-center text-center border-2 p-4 rounded-lg text-sm text-muted-foreground
-        ${contact ? 'border-solid' : 'border-dashed'}
+        flex items-center justify-center text-center
+        border p-4 rounded-lg
+        ${contact    ? 'border-solid border-border-strong' : 'border-dashed border-border'}
+        ${contact    ? 'bg-success-muted'                  : 'bg-white/[0.02]'}
+        ${isRejected ? 'border-danger/20 bg-danger-muted'  : ''}
     `
     return (
         <div className={className}>
             {contact ? (
-                <div>
-                    <div>Counterpart contact</div>
-                    <div className="text-2xl text-foreground font-semibold">{contact}</div>
+                <div className="flex flex-col gap-1">
+                    <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-fg-muted">
+                        Counterpart contact
+                    </span>
+                    <span className="font-sans text-lg font-bold text-brand">
+                        {contact}
+                      </span>
                 </div>
             ) : isRejected ? (
-                <div>This match was rejected.</div>
+                <span className="font-mono text-xs text-fg-muted">
+                  This match was rejected.
+                </span>
             ) : iApproved ? (
-                <div>Waiting for counterpart to send contact</div>
+                <span className="font-mono text-xs text-fg-muted">
+                  Waiting for counterpart to send contact
+                </span>
             ) : (
-                <div>Contact details will be revealed once both&nbsp;parties confirm.</div>
+                <span className="font-mono text-xs text-fg-muted">
+                  Contact details will be revealed once both&nbsp;parties confirm.
+                </span>
             )}
         </div>
     )

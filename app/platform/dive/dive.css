@@ -1,9 +1,45 @@
 .platform-dive {
-    --background: #f8f8f8;
-    --border: #e5e5ea;
-    --primary: #0a84ff;
-    --primary-foreground: #ffffff;
-    --destructive: #ff3b30;
-    --secondary: #6366f1;
-    --secondary-foreground: #ffffff;
+    --font-heading: 'Bricolage Grotesque', sans-serif;
+    --font-sans:    'Bricolage Grotesque', sans-serif;
+    --font-mono:    'Space Mono', monospace;
+
+    --page:              #080f18;
+    --surface:           #04111f;
+    --surface-raised:    #061828;
+    --surface-overlay:   #082234;
+
+    --fg:                #dff0ed;
+    --fg-muted:          #4a7a80;
+    --fg-subtle:         color-mix(in srgb, #4a7a80 50%, transparent);
+
+    --brand:             #00d2b9;
+    --brand-fg:          #04111f;
+    --brand-muted:       color-mix(in srgb, #00d2b9 12%, transparent);
+    --brand-subtle:      color-mix(in srgb, #00d2b9 6%,  transparent);
+
+    --secondary:         #082234;
+    --secondary-fg:      #dff0ed;
+
+    --border:            color-mix(in srgb, #00d2b9 12%, transparent);
+    --border-strong:     color-mix(in srgb, #00d2b9 30%, transparent);
+    --input:             color-mix(in srgb, #00d2b9 10%, transparent);
+    --ring:              color-mix(in srgb, #00d2b9 35%, transparent);
+
+    --success:           #50c878;
+    --success-muted:     color-mix(in srgb, #50c878 12%, transparent);
+    --danger:            #ff4646;
+    --danger-muted:      color-mix(in srgb, #ff4646 10%, transparent);
+    --warning:           #f5a623;
+    --warning-muted:     color-mix(in srgb, #f5a623 12%, transparent);
+    --info:              #4fa0ff;
+    --info-muted:        color-mix(in srgb, #4fa0ff 12%, transparent);
+}
+
+@keyframes sonar {
+    0%   { width: 40px;  height: 40px;  opacity: 0.8; }
+    100% { width: 220px; height: 220px; opacity: 0; }
+}
+
+.animate-sonar {
+    animation: sonar 3s ease-out infinite;
 }

@@ -20,6 +20,7 @@ export function EnableNotificationButton() {
             disabled={status === 'loading'}
             className="relative"
             variant="secondary"
+            size="icon"
         >
             <BellIcon className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#0a84ff] rounded-full" />

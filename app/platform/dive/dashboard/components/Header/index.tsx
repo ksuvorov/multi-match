@@ -2,6 +2,7 @@
 
 import { ReactNode, useMemo, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { Plus } from 'lucide-react'
 
 import { EnableNotificationButton } from '@/app/components/EnableNotificationsButton';
 import { usePlatformSession } from '@/app/providers/platformSession'
@@ -51,7 +52,13 @@ export default function DashboardHeader({roles, activeRole}: Props) {
             <div className="flex gap-2">
                 <EnableNotificationButton />
                 <QR />
-                <Button href={`/platform/dive/${activeRole}`}>+</Button>
+                <Button
+                    href={`/platform/dive/${activeRole}`}
+                    size="icon"
+                    className="rounded-lg"
+                >
+                    <Plus size={18} />
+                </Button>
             </div>
         </header>
     )

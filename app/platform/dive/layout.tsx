@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { ReactNode } from 'react'
 import { eq } from 'drizzle-orm'
 
-import {PlatformProvider} from '@/app/providers/platform';
+import { PlatformProvider } from '@/app/providers/platform';
 import { platform } from '@/lib/db/schemas/platform';
 import db from '@/lib/db';
 
@@ -17,7 +17,7 @@ export default async function DiveLayout({ children }: { children: ReactNode }) 
 
     return (
         <PlatformProvider platform={p}>
-            <div className="platform-dive h-full">
+            <div className="platform-dive h-full bg-page">
                 {children}
             </div>
         </PlatformProvider>

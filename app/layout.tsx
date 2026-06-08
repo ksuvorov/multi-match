@@ -1,26 +1,26 @@
+import { Bricolage_Grotesque, Space_Mono } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 
-import {QueryProvider} from '@/app/providers/query';
+import { QueryProvider } from '@/app/providers/query';
 import { cn } from "@/lib/utils";
 
 import AnonymousSessionProvider from './components/anonymousSessionProvider';
 
 import "./globals.css";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+  variable: '--font-sans',
+})
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-mono',
+})
 
 export const metadata: Metadata = {
   title: "MultiMatch",
@@ -43,11 +43,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
+    <html lang="en" className={cn(bricolage.variable, spaceMono.variable)}>
       <body>
         <QueryProvider>
           <AnonymousSessionProvider />
-          <div className="flex flex-col flex-1 p-3">
+          <div className="flex flex-col flex-1">
             {children}
           </div>
           <SpeedInsights />

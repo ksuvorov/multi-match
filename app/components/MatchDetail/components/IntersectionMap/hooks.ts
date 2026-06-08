@@ -11,8 +11,8 @@ export const useEnhance = (primary: MatchListingData, secondary: MatchListingDat
         const el = document.querySelector('[class*="platform-"]') ?? document.documentElement
         const style = getComputedStyle(el)
         return {
-            primaryColor: style.getPropertyValue('--primary').trim(),
-            secondaryColor: style.getPropertyValue('--secondary').trim(),
+            primaryColor: style.getPropertyValue('--brand').trim(),
+            secondaryColor: style.getPropertyValue('--info').trim(),
         }
     }, [])
 
